@@ -17,14 +17,10 @@ class Sigmoid:
 
 class ReLU:
     def __init__(self):
-        self.inputs = None
-        self.outputs = None
-        self.params = None
+        raise NotImplementedError
 
     def forward(self, inputs):
-        self.inputs = inputs
-        self.outputs = np.maximum(0, inputs)
-        return self.outputs
+        raise NotImplementedError
 
     def backward(self, grads):
         raise NotImplementedError
@@ -60,7 +56,19 @@ class Linear:
         return np.matmul(self.inputs, self.params["weight"]) + self.params["bias"]
 
     def backward(self, grads):
-        raise NotImplementedError
+        """
+        计算反向传播梯度。
+
+        参数:
+        - grads (ndarray): 一个 (batch_size, output_size) 的二维数组，反向传播过来的梯度值。
+
+        返回:
+        - (ndarray): 一个 (batch_size, input_size) 的二维数组，根据链式法则计算的反向传播梯度。
+        """
+        batch_size = grads.shape[0]
+        self.grads["weight"] = np.matmul(self.inputs.T, grads) / batch_size
+        self.grads["bias"] = np.sum(grads, axis=0) / batch_size
+        return np.matmul(grads, self.params["weight"].T)
 
 
 class MSELoss:
@@ -98,5 +106,5 @@ class MSELoss:
         - loss_grad_predicts (ndarray): 一个 (batch_size, output_dim) 的二维数组，一行对应一个 sample \
             ，每一列对应 loss 关于该输出分量的梯度。
         """
-        loss_grad_predicts = (self.predicts - self.labels)
+        loss_grad_predicts = self.predicts - self.labels
         return loss_grad_predicts
