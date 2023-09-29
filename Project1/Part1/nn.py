@@ -74,6 +74,16 @@ class MSELoss:
         return self.forward(predicts, labels)
 
     def forward(self, predicts, labels):
+        """
+        计算损失函数。
+
+        参数:
+        - predicts (ndarray): 一个 (batch_size, output_dim) 的二维数组，模型预测结果。
+        - labels (ndarray): 一个 (batch_size, output_dim) 的二维数组，目标结果。
+
+        返回:
+        - (float): 该批量数据的平均损失。
+        """
         self.predicts = predicts
         self.labels = labels
         self.batch_size = predicts.shape[0]
