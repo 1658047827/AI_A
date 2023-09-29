@@ -4,9 +4,7 @@ from collections import defaultdict
 
 class Sigmoid:
     def __init__(self):
-        self.inputs = None
         self.outputs = None
-        self.params = None
 
     def forward(self, inputs):
         self.outputs = 1.0 / (1.0 + np.exp(-inputs))
@@ -15,6 +13,7 @@ class Sigmoid:
     def backward(self, grads):
         outputs_grad_inputs = np.multiply(self.outputs, (1.0 - self.outputs))
         return np.multiply(grads, outputs_grad_inputs)
+
 
 class ReLU:
     def __init__(self):
@@ -62,3 +61,32 @@ class Linear:
 
     def backward(self, grads):
         raise NotImplementedError
+
+
+class MSELoss:
+    def __init__(self):
+        self.predicts = None
+        self.labels = None
+        self.batch_size = None
+        self.loss = None
+
+    def __call__(self, predicts, labels):
+        return self.forward(predicts, labels)
+
+    def forward(self, predicts, labels):
+        self.predicts = predicts
+        self.labels = labels
+        self.batch_size = predicts.shape[0]
+        loss = np.square((predicts - labels)) / 2
+        return np.sum(loss) / self.batch_size
+
+    def backward(self):
+        """
+        计算反向传播的所需的梯度。
+
+        返回:
+        - loss_grad_predicts (ndarray): 一个 (batch_size, output_dim) 的二维数组，一行对应一个 sample \
+            ，每一列对应 loss 关于该输出分量的梯度。
+        """
+        loss_grad_predicts = (self.predicts - self.labels)
+        return loss_grad_predicts
