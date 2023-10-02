@@ -79,7 +79,7 @@ def dump_args(args, record_path):
     os.makedirs(record_path, exist_ok=True)
     json_pretty_dump(args, os.path.join(record_path, "args.json"))
     set_log(os.path.join(record_path, "train.log"))
-    logging.info("dump_args: {}".format(json.dumps(args, indent=4)))
+    logging.info("Dump args: {}".format(json.dumps(args, indent=4)))
 
 
 def data_generator(data_path):
