@@ -76,6 +76,7 @@ def dump_args(args, record_path):
     ).hexdigest()[0:8]
     args["hash_id"] = hash_id
 
+    record_path = os.path.join(record_path, hash_id)
     os.makedirs(record_path, exist_ok=True)
     json_pretty_dump(args, os.path.join(record_path, "args.json"))
     set_log(os.path.join(record_path, "train.log"))
@@ -91,6 +92,7 @@ def data_generator(data_path):
     """
     x = np.random.rand(10000, 1) * 2 * np.pi - np.pi  # [-pi, pi)
     y = np.sin(x)
+    os.makedirs(os.path.dirname(data_path), exist_ok=True)
     np.savez(
         data_path,
         x_train=x[:8000],
