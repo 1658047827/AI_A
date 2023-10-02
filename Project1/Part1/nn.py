@@ -76,7 +76,6 @@ class MSELoss:
         self.predicts = None
         self.labels = None
         self.batch_size = None
-        self.loss = None
 
     def __call__(self, predicts, labels):
         return self.forward(predicts, labels)
@@ -104,7 +103,7 @@ class MSELoss:
 
         返回:
         - loss_grad_predicts (ndarray): 一个 (batch_size, output_dim) 的二维数组，一行对应一个 sample \
-            ，每一列对应 loss 关于该输出分量的梯度。
+            ，每一列对应 MSELoss 关于该输出分量的梯度。
         """
         loss_grad_predicts = self.predicts - self.labels
         return loss_grad_predicts
