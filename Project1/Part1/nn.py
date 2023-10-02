@@ -5,6 +5,9 @@ from collections import defaultdict
 class Sigmoid:
     def __init__(self):
         self.outputs = None
+    
+    def __call__(self, inputs):
+        return self.forward(inputs)
 
     def forward(self, inputs):
         self.outputs = 1.0 / (1.0 + np.exp(-inputs))
@@ -50,6 +53,9 @@ class Linear:
         self.grads = defaultdict(lambda: {"weight": None, "bias": None})
         self.params["weight"] = weight_init(size=(input_size, output_size))
         self.params["bias"] = bias_init((1, output_size))
+
+    def __call__(self, inputs):
+        return self.forward(inputs)
 
     def forward(self, inputs):
         self.inputs = inputs
