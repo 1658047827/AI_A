@@ -1,0 +1,13 @@
+2023-10-03 19:12:19,830 P9384 INFO Dump args: {
+    "epoches": 2000,
+    "batch_size": 64,
+    "learning_rate": 0.03,
+    "record_path": "./record/sin",
+    "save_path": "./save/sin/best_model.pkl",
+    "data_path": "./data/sin/data.npz",
+    "random_seed": 42,
+    "mode": "test",
+    "hash_id": "a7d4ad96"
+}
+2023-10-03 19:12:19,834 P9384 INFO Load model from ./save/sin/best_model.pkl
+2023-10-03 19:12:19,842 P9384 INFO Test mean error: 0.002175
