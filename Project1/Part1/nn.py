@@ -40,7 +40,22 @@ class ReLU(Module):
         return np.maximum(0, inputs)
 
     def backward(self, grads):
-        raise NotImplementedError
+        outputs_grad_inputs = self.inputs > 0
+        return np.multiply(grads, outputs_grad_inputs)
+
+
+class LeakyReLU(Module):
+    def __init__(self, alpha=0.1):
+        super(LeakyReLU, self).__init__()
+        self.inputs = None
+        self.alpha = alpha
+
+    def forward(self, inputs):
+        self.inputs = inputs
+        return np.maximum(self.alpha * inputs, inputs)
+
+    def backward(self, grads):
+        return np.where(self.inputs > 0, grads, self.alpha * grads)
 
 
 class Softmax(Module):
