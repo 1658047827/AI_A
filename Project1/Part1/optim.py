@@ -14,9 +14,9 @@ class Optimizer:
 
     def zero_grad(self):
         for layer in self.model.module_list:
-            if hasattr(layer, "params") and isinstance(layer.params, dict):
-                for key in layer.params.keys():
-                    layer.params[key].fill(0.0)
+            if hasattr(layer, "grads") and isinstance(layer.grads, dict):
+                for key in layer.grads.keys():
+                    layer.grads[key].fill(0.0)
 
 
 class StepLR:
