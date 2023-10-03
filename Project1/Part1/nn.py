@@ -80,8 +80,8 @@ class Linear(Module):
     ):
         super(Linear, self).__init__()
         self.inputs = None
-        self.params = defaultdict(lambda: {"weight": None, "bias": None})
-        self.grads = defaultdict(lambda: {"weight": None, "bias": None})
+        self.params = {"weight": None, "bias": None}
+        self.grads = {"weight": None, "bias": None}
         self.params["weight"] = weight_init(size=(input_size, output_size))
         self.params["bias"] = bias_init((1, output_size))
 
