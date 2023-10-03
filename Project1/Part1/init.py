@@ -59,13 +59,14 @@ def json_pretty_dump(obj, filename):
         )
 
 
-def dump_args(args, record_path):
+def dump_args(args, record_path, mode):
     """
     用于保存参数和设置日志。
 
     参数:
     - args (dict): 需要保存的参数字典。
     - record_path (str): 参数保存路径。
+    - mode (str): 主程序的模式，为 "train", "test", "train_and_test" 中的一个。
 
     注意:
     - 为了使日志输出同时显示在文件和终端上，该函数会执行调用 set_log(log_file) 。
@@ -79,8 +80,9 @@ def dump_args(args, record_path):
     record_path = os.path.join(record_path, hash_id)
     os.makedirs(record_path, exist_ok=True)
     json_pretty_dump(args, os.path.join(record_path, "args.json"))
-    set_log(os.path.join(record_path, "train.log"))
+    set_log(os.path.join(record_path, f"{mode}.log"))
     logging.info("Dump args: {}".format(json.dumps(args, indent=4)))
+    return record_path
 
 
 def data_generator(data_path):
