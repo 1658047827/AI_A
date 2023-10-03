@@ -2,12 +2,24 @@ import numpy as np
 from collections import defaultdict
 
 
-class Sigmoid:
+class Module:
+    def __init__(self) -> None:
+        pass
+
+    def __call__(self, *inputs):
+        return self.forward(*inputs)
+
+    def forward(self, *inputs):
+        raise NotImplementedError
+
+    def backward(self, *grads):
+        raise NotImplementedError
+
+
+class Sigmoid(Module):
     def __init__(self):
+        super(Sigmoid, self).__init__()
         self.outputs = None
-    
-    def __call__(self, inputs):
-        return self.forward(inputs)
 
     def forward(self, inputs):
         self.outputs = 1.0 / (1.0 + np.exp(-inputs))
@@ -18,19 +30,22 @@ class Sigmoid:
         return np.multiply(grads, outputs_grad_inputs)
 
 
-class ReLU:
+class ReLU(Module):
     def __init__(self):
-        raise NotImplementedError
+        super(ReLU, self).__init__()
+        self.inputs = None
 
     def forward(self, inputs):
-        raise NotImplementedError
+        self.inputs = inputs
+        return np.maximum(0, inputs)
 
     def backward(self, grads):
         raise NotImplementedError
 
 
-class Softmax:
+class Softmax(Module):
     def __init__(self):
+        super(Softmax, self).__init__()
         raise NotImplementedError
 
     def forward(self):
@@ -40,7 +55,7 @@ class Softmax:
         raise NotImplementedError
 
 
-class Linear:
+class Linear(Module):
     def __init__(
         self,
         input_size: int,
@@ -48,14 +63,12 @@ class Linear:
         weight_init=np.random.normal,
         bias_init=np.zeros,
     ):
+        super(Linear, self).__init__()
         self.inputs = None
         self.params = defaultdict(lambda: {"weight": None, "bias": None})
         self.grads = defaultdict(lambda: {"weight": None, "bias": None})
         self.params["weight"] = weight_init(size=(input_size, output_size))
         self.params["bias"] = bias_init((1, output_size))
-
-    def __call__(self, inputs):
-        return self.forward(inputs)
 
     def forward(self, inputs):
         self.inputs = inputs
@@ -77,14 +90,12 @@ class Linear:
         return np.matmul(grads, self.params["weight"].T)
 
 
-class MSELoss:
+class MSELoss(Module):
     def __init__(self):
+        super(MSELoss, self).__init__()
         self.predicts = None
         self.labels = None
         self.batch_size = None
-
-    def __call__(self, predicts, labels):
-        return self.forward(predicts, labels)
 
     def forward(self, predicts, labels):
         """
