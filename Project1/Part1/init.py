@@ -3,6 +3,7 @@ import random
 import json
 import logging
 import hashlib
+import cv2
 import numpy as np
 
 
@@ -106,5 +107,61 @@ def data_generator(data_path):
     )
 
 
-def data_preprocess():
-    raise NotImplementedError
+def data_preprocess(raw_data_path, data_path, shuffle=True):
+    x_list = []
+    y_list = []
+    for item in os.listdir(raw_data_path):
+        index = int(item) - 1  # 汉字的分类索引
+        item_path = os.path.join(raw_data_path, item)
+        for bmp in os.listdir(item_path):
+            bmp_path = os.path.join(item_path, bmp)
+            img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+            # TODO: 数据增强 & 进行数据的归一化
+            flatten_img = img.flatten()
+            x_list.append(flatten_img)
+            y_list.append(index)
+
+    x = np.vstack(x_list)
+    print("x generated, shape: {}".format(x.shape))
+    y = np.array(y_list)
+    print("y generated, shape: {}".format(y.shape))
+    num_samples = x.shape[0]
+
+    if shuffle:
+        print("Shuffling x and y")
+        random_indices = np.arange(num_samples)
+        np.random.shuffle(random_indices)
+        x = x[random_indices]
+        y = y[random_indices]
+
+    print("Splitting train, validation, test dataset")
+    train_num = int(num_samples * 0.85)
+    valid_num = int(num_samples * 0.1)
+    test_num = num_samples - train_num - valid_num
+
+    print("Saving data")
+    os.makedirs(os.path.dirname(data_path), exist_ok=True)
+    np.savez(
+        data_path,
+        x_train=x[:train_num],
+        y_train=y[:train_num],
+        x_valid=x[train_num : train_num + valid_num],
+        y_valid=y[train_num : train_num + valid_num],
+        x_test=x[-test_num:],
+        y_test=y[-test_num:],
+    )
+
+
+if __name__ == "__main__":
+    current_file_path = os.path.abspath(__file__)
+    current_directory = os.path.dirname(current_file_path)
+    os.chdir(current_directory)
+
+    seed_everything(42)
+
+    # data_preprocess("./data/char/train_raw", "./data/char/data.npz")
+    data_npz = np.load("./data/char/data.npz")
+    print(data_npz["x_train"].shape)
+    print(data_npz["y_train"].shape)
+
+    exit(0)
