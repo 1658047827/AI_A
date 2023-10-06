@@ -65,22 +65,12 @@ class Softmax(Module):
 
         参数:
         - dim (int): 指定 Softmax 沿着该维度计算，则所有沿着这个维度的元素和为 1 。
-
-        注意:
-        - 例如，对于一个形状为 (B, C, H, W)=(2, 3, 2, 3) 的张量 in ，经过 Softmax 得到张量 out :
-            - 如果 dim=0 ，则会有 out[0][i][j][k] + out[1][i][j][k] = 1 。
-            - 如果 dim=1 ，则会有 out[b][0][j][k] + out[b][1][j][k] + out[b][2][j][k] = 1 。
-            - 如果 dim=2 ，则会有 out[b][i][0][k] + out[b][i][1][k] = 1 。
-            - 如果 dim=3 ，则会有 out[b][i][j][0] + out[b][i][j][1] + out[b][i][j][2] = 1 。
         """
         super(Softmax, self).__init__()
         self.dim = dim
 
     def forward(self, inputs):
-        max_inputs = np.max(inputs, axis=self.dim, keepdims=True)
-        exp_logits = np.exp(inputs - max_inputs)
-        sum_exp = np.sum(exp_logits, axis=self.dim, keepdims=True)
-        self.softmax_scores = exp_logits / sum_exp
+        self.softmax_scores = softmax(inputs, dim=self.dim)
         return self.softmax_scores
 
     def backward(self, grads):
@@ -120,9 +110,9 @@ class Linear(Module):
         返回:
         - (ndarray): 形如 (batch_size, input_size) 的二维数组，根据链式法则计算的反向传播梯度。
         """
-        batch_size = grads.shape[0]
-        self.grads["weight"] = np.matmul(self.inputs.T, grads) / batch_size
-        self.grads["bias"] = np.sum(grads, axis=0) / batch_size
+        # 损失函数模块的 backward() 就已经除以 self.batch_size 了，所以已经是平均梯度
+        self.grads["weight"] = np.matmul(self.inputs.T, grads)
+        self.grads["bias"] = np.sum(grads, axis=0)
         return np.matmul(grads, self.params["weight"].T)
 
 
@@ -148,7 +138,7 @@ class MSELoss(Module):
         self.labels = labels
         self.batch_size = predicts.shape[0]
         loss = np.square((predicts - labels)) / 2
-        return np.sum(loss) / self.batch_size
+        return np.sum(loss) / self.batch_size  # 平均损失
 
     def backward(self):
         """
@@ -159,10 +149,14 @@ class MSELoss(Module):
             ，每一列对应 MSELoss 关于该输出分量的梯度。
         """
         loss_grad_predicts = self.predicts - self.labels
-        return loss_grad_predicts
+        return loss_grad_predicts / self.batch_size  # 平均梯度
 
 
 class CrossEntropyLoss(Module):
+    """
+    nn.CrossEntropyLoss() = nn.LogSoftmax() + nn.NLLLoss() 。
+    """
+
     def __init__(self):
         super(CrossEntropyLoss, self).__init__()
 
@@ -172,26 +166,40 @@ class CrossEntropyLoss(Module):
 
         参数:
         - predicts (ndarray): 形如 (batch_size, class_num) 的二维数组，第二维是样本预测在每个类别的后验概率。
-        - labels (ndarray): 目标结果，形如 (batch_size, ) 的一维数组， labels[i] 存储第 i 个 sample \
-            预期的结果类别索引 class_index 。
+        - labels (ndarray): 目标结果，可以是形如 (batch_size, ) 的一维数组， labels[i] 存储第 i 个 sample \
+            预期的结果类别索引 class_index 。也可以是形如 (batch_size, class_num) 的二维数组，代表实际各个类 \
+            的概率，例如 one-hot 编码表示。
         """
         self.predicts = predicts
         self.labels = labels
         self.batch_size = predicts.shape[0]
-        """
-        使用 numpy 高级索引， predicts[np.arange(self.batch_size), labels] 会返回元素为:
-        - predicts[0][labels[0]]
-        - predicts[1][labels[1]]
-        - predicts[2][labels[2]]
-        - ...
-        - predicts[n-2][labels[n-2]]
-        - predicts[n-1][labels[n-1]]
-        的形如 (batch_size, ) 的一维数组。其中 n = batch_size ，而 np.arange(self.batch_size) \
-            = array([0, 1, 2, ..., n-1])
-        """
-        epsilon = 1e-15  # 防止 log(0) 的情况，添加一个极小的值
-        loss = -np.sum(np.log(predicts[np.arange(self.batch_size), labels] + epsilon))
-        return loss / self.batch_size
+
+        # 计算 softmax ，得到分类概率
+        self.softmax_scores = softmax(predicts, dim=1)
+
+        if labels.shape[1] == 1:
+            e = labels[0]
+            if not (
+                np.isscalar(e) and np.issubsctype(np.asarray(e), np.integer)
+            ):  # 确保是整数类型
+                raise ValueError
+            """
+            使用 numpy 高级索引， softmax_scores[np.arange(self.batch_size), labels] 会返回元素为:
+            - softmax_scores[0][labels[0]]
+            - softmax_scores[1][labels[1]]
+            - softmax_scores[2][labels[2]]
+            - ...
+            - softmax_scores[n-2][labels[n-2]]
+            - softmax_scores[n-1][labels[n-1]]
+            的形如 (batch_size, ) 的一维数组。其中 n = batch_size ，而 np.arange(self.batch_size) \
+                = array([0, 1, 2, ..., n-1])
+            """
+            loss = -np.sum(
+                np.log(self.softmax_scores[np.arange(self.batch_size), labels])
+            )
+        elif predicts.shape[1] == labels.shape[1]:
+            loss = -np.sum(labels * np.log(self.softmax_scores))
+        return loss / self.batch_size  # 平均损失
 
     def backward(self):
         """
@@ -200,10 +208,32 @@ class CrossEntropyLoss(Module):
         返回:
         - loss_grad_predicts (ndarray): 形如 (batch_size, class_num) 的二维数组，
         """
-        epsilon = 1e-15  # 防止除以 0 的情况
-        arange = np.arange(self.batch_size)
-        loss_grad_predicts = np.zeros_like(self.predicts)
-        loss_grad_predicts[arange, self.labels] = -1 / (
-            self.predicts[arange, self.labels] + epsilon
-        )
-        return loss_grad_predicts
+        if self.predicts.shape[1] == self.labels.shape[1]:
+            grads = self.softmax_scores - self.labels
+        elif self.labels.shape[1] == 1:
+            grads = self.softmax_scores.copy()
+            grads[np.arange(self.batch_size), self.labels] -= 1
+        return grads / self.batch_size  # 平均梯度
+
+
+def softmax(input, dim):
+    """
+    计算 softmax 函数。
+
+    参数:
+    - input (ndarray): numpy.ndarray 多维数组。
+    - dim (int): 指定 softmax 沿着该维度计算，则所有沿着这个维度的元素和为 1 。
+
+    返回:
+    - (ndarray): numpy.ndarray 多维数组。
+
+    注意:
+    - 例如，对于一个形状为 (B, C, H, W)=(2, 3, 2, 3) 的张量 in ，经过 softmax 得到张量 out :
+         - 如果 dim=0 ，则会有 out[0][i][j][k] + out[1][i][j][k] = 1 。
+         - 如果 dim=1 ，则会有 out[b][0][j][k] + out[b][1][j][k] + out[b][2][j][k] = 1 。
+         - 如果 dim=2 ，则会有 out[b][i][0][k] + out[b][i][1][k] = 1 。
+         - 如果 dim=3 ，则会有 out[b][i][j][0] + out[b][i][j][1] + out[b][i][j][2] = 1 。
+    """
+    exp_logits = np.exp(input - np.max(input, axis=dim, keepdims=True))
+    softmax_scores = exp_logits / np.sum(exp_logits, axis=dim, keepdims=True)
+    return softmax_scores
