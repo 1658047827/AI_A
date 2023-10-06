@@ -93,15 +93,18 @@ class Linear(Module):
         self,
         input_size: int,
         output_size: int,
-        weight_init=np.random.normal,
-        bias_init=np.zeros,
     ):
         super(Linear, self).__init__()
         self.inputs = None
         self.params = {"weight": None, "bias": None}
         self.grads = {"weight": None, "bias": None}
-        self.params["weight"] = weight_init(size=(input_size, output_size))
-        self.params["bias"] = bias_init((1, output_size))
+        sqrt_k = np.sqrt(1 / input_size)
+        self.params["weight"] = np.random.uniform(
+            low=-sqrt_k, high=sqrt_k, size=(input_size, output_size)
+        )
+        self.params["bias"] = np.random.uniform(
+            low=-sqrt_k, high=sqrt_k, size=(1, output_size)
+        )
 
     def forward(self, inputs):
         self.inputs = inputs
