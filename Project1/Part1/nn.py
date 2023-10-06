@@ -177,7 +177,9 @@ class CrossEntropyLoss(Module):
         # 计算 softmax ，得到分类概率
         self.softmax_scores = softmax(predicts, dim=1)
 
-        if labels.shape[1] == 1:
+        if predicts.shape == labels.shape:
+            loss = -np.sum(labels * np.log(self.softmax_scores))
+        else:
             e = labels[0]
             if not (
                 np.isscalar(e) and np.issubsctype(np.asarray(e), np.integer)
@@ -197,8 +199,6 @@ class CrossEntropyLoss(Module):
             loss = -np.sum(
                 np.log(self.softmax_scores[np.arange(self.batch_size), labels])
             )
-        elif predicts.shape[1] == labels.shape[1]:
-            loss = -np.sum(labels * np.log(self.softmax_scores))
         return loss / self.batch_size  # 平均损失
 
     def backward(self):
@@ -208,9 +208,9 @@ class CrossEntropyLoss(Module):
         返回:
         - loss_grad_predicts (ndarray): 形如 (batch_size, class_num) 的二维数组，
         """
-        if self.predicts.shape[1] == self.labels.shape[1]:
+        if self.predicts.shape == self.labels.shape:
             grads = self.softmax_scores - self.labels
-        elif self.labels.shape[1] == 1:
+        else:
             grads = self.softmax_scores.copy()
             grads[np.arange(self.batch_size), self.labels] -= 1
         return grads / self.batch_size  # 平均梯度
