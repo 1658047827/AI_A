@@ -5,3 +5,6 @@ __pycache__/
 
 # VSCode
 .vscode
+
+# Project1 Part1: raw train data for fitting characters
+Project1/Part1/data/char/train_raw/
