@@ -194,7 +194,7 @@ class CrossEntropyLoss(Module):
             - softmax_scores[n-2][labels[n-2]]
             - softmax_scores[n-1][labels[n-1]]
             的形如 (batch_size, ) 的一维数组。其中 n = batch_size ，而 np.arange(self.batch_size) \
-                = array([0, 1, 2, ..., n-1])
+                = array([0, 1, 2, ..., n-1]) 。
             """
             loss = -np.sum(
                 np.log(self.softmax_scores[np.arange(self.batch_size), labels])
@@ -206,7 +206,7 @@ class CrossEntropyLoss(Module):
         计算反向传播的所需的梯度。
 
         返回:
-        - loss_grad_predicts (ndarray): 形如 (batch_size, class_num) 的二维数组，
+        - loss_grad_predicts (ndarray): 形如 (batch_size, class_num) 的二维数组。
         """
         if self.predicts.shape == self.labels.shape:
             grads = self.softmax_scores - self.labels

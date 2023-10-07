@@ -213,8 +213,9 @@ class MLPClassifier:
     def predict(self, inputs, show_prob=False):
         result = {}
         predicts = self.model(inputs)
-        pred = np.argmax(predicts, axis=1, keepdims=False)
-        result["pred"] = pred
+        result["predicts"] = predicts
+        pred_class = np.argmax(predicts, axis=1, keepdims=False)
+        result["pred_class"] = pred_class
         if show_prob:
             softmax = Softmax(dim=1)
             prob = softmax(predicts)
