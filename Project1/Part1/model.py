@@ -13,6 +13,7 @@ from nn import (
     Softmax,
     MSELoss,
     CrossEntropyLoss,
+    softmax,
 )
 
 
@@ -217,8 +218,7 @@ class MLPClassifier:
         pred_class = np.argmax(predicts, axis=1, keepdims=False)
         result["pred_class"] = pred_class
         if show_prob:
-            softmax = Softmax(dim=1)
-            prob = softmax(predicts)
+            prob = softmax(predicts, dim=1)
             result["prob"] = prob
         return result
 
