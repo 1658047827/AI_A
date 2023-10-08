@@ -5,6 +5,9 @@ TODO:
 + Linear添加控制是否使用bias参数
 + 理解Linear反向传播的过程（在docs.md中手写一遍）
 + 把Softmax和交叉熵等重要模块的求梯度补充在文档中，理解反向求导过程
++ 多分类为何使用CELoss而不使用MESLoss
++ 训练图片做标准化、归一化
++ 主程序换成jupyter notebook
 
 ## Section 1. 代码基本架构
 
@@ -115,7 +118,7 @@ class CrossEntropyLoss(Module):
         return grads / self.batch_size
 ```
 
-参考 PyTorch 文档，输入的每个 sample 不需要分量求和为 1 ，因为文档提到 `nn.CrossEntropyLoss` 实际会先计算 `nn.LogSoftmax` 然后计算 `nn.NLLLoss` ，也就是会先对输入进行 softmax ，然后再计算交叉熵损失函数。所以在多分类问题中，若使用 `CrossEntropyLoss` 作为损失函数，则模型的输出层实际无需再添加 `Softmax` 层。
+参考 PyTorch 文档，输入的每个 sample 不需要分量求和为 1 ，因为文档提到 `nn.CrossEntropyLoss` 等价于先计算 `nn.LogSoftmax` 然后计算 `nn.NLLLoss` ，也就是会先对输入进行 softmax ，然后再计算交叉熵损失函数。所以在多分类问题中，若使用 `CrossEntropyLoss` 作为损失函数，则模型的输出层实际无需再添加 `Softmax` 层。
 
 同时，这里实现的 `CrossEntropyLoss` 也支持两种 `target` 形式，可以是形如 `(batch_size)` 的一维数组，存储每个 sample 的目标分类索引，也可以是形如 `(batch_size, class_num)` 的矩阵，存储每个 sample 的各个类的分类概率，例如 one-hot 编码。
 
@@ -162,7 +165,7 @@ class Sigmoid(Module):
         return np.multiply(grads, outputs_grad_inputs)
 ```
 
-简单的 `Sigmoid` 实现，也叫做 `Logistic` 函数，作为激活层。
+简单的 `Sigmoid` 实现，也叫做 `Logistic` 函数，作为激活层，也是二分类常用的函数。
 
 ### ReLU
 
@@ -212,7 +215,61 @@ class Optimizer:
 
 ### DataLoader
 
+为了方便训练代码的编写，我还实现了一个 `DataLoader` ，使用的方式和 torch 中的相近，能够根据 `Dataset` 和 `Sampler` 对给出的数据集进行采样、整合，并提供一种迭代的方式使用数据。
 
+```python
+class DataLoader:
+    def __init__(
+        self, dataset, batch_size=1, shuffle=False, collate_fn=None, drop_last=False
+    ):
+        sampler = RandomSampler(dataset) if shuffle else SequentialSampler(dataset)
+        batch_sampler = BatchSampler(sampler, batch_size, drop_last)
+        if collate_fn is None:
+            collate_fn = default_collate
+
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.drop_last = drop_last
+        self.sampler = sampler
+        self.batch_sampler = batch_sampler
+        self.batch_sampler_iter = None
+        self.collate_fn = collate_fn
+
+    def __len__(self):
+        return len(self.batch_sampler)
+
+    def __next__(self):
+        indices = next(self.batch_sampler_iter)
+        data = [self.dataset[idx] for idx in indices]
+        stacked = self.collate_fn(data)
+        return stacked
+
+    def __iter__(self):
+        self.batch_sampler_iter = iter(self.batch_sampler)
+        return self
+```
+
+为了更好地解释这部分代码，这里引用知乎上的一张流程图：
+
+<img src="./resource/DataLoader.jpg" alt="DataLoader.jpg" style="zoom: 80%;" />
+
+`BatchSampler` 是批量采样器，迭代这个批量采样器会每次返回一批的索引，我们利用这些索引从 `dataset` 中获取一批的 sample ，以一个 `list` 的形式传入 `collate_fun` 进行整理，整理后返回一个可以输入网络的 `ndarray` 。默认整理函数参考了 PyTorch 的源代码，利用递归可以处理 `ndarray` 、`dict` 、`list` 形式的 sample ：
+
+```python
+def default_collate(batch):
+    elem_type = type(batch[0])
+    if elem_type.__module__ == "numpy":
+        return np.stack(batch, 0)
+    elif isinstance(batch[0], collections.Mapping):
+        return {key: default_collate([d[key] for d in batch]) for key in batch[0]}
+    elif isinstance(batch[0], collections.Sequence):
+        transposed = zip(*batch)
+        return [default_collate(samples) for samples in transposed]
+    else:
+        raise NotImplementedError
+```
+
+`collate_fun` 把 $\text{batch\_size}$ 个形如  $(dim_0, dim_1, \cdots, dim_k)$ 的 `ndarray` sample 整理成一个形如 $(\text{batch\_size}, dim_0,\cdots,dim_k)$ 的 `ndarray` batch 。而 `Sampler` 提供对整个数据集所有样本的一个采样索引序列，每次 `BatchSampler` 从 `Sampler` 中取 $\text{batch\_size}$ 个索引，利用这些索引去 `dataset` 中取对应的 sample 。所以 `dataset` 只需要实现 `__getitem__` 和 `__len__` 方法即可。
 
 ### Others
 
