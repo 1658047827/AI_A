@@ -1,5 +1,3 @@
-线性层参考了torch文档中的定义
-
 按照torch的风格，把Softmax和CELoss结合起来放到CrossEntropyLoss模块，也就是nn.CrossEntropyLoss() = nn.LogSoftmax() + nn.NLLLoss()
 
 TODO: 
@@ -8,18 +6,7 @@ TODO:
 + 理解Linear反向传播的过程（在docs.md中手写一遍）
 + 把Softmax和交叉熵等重要模块的求梯度补充在文档中，理解反向求导过程
 
-
-参考资料：
-
-+ [带你从零掌握迭代器及构建最简 DataLoader - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/340465632)
-+ [DataLoader原理解析 (最简单版本实现) - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/549850590)
-+ [PyTorch36.DataLoader源代码剖析 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/169497395)
-+ [温故知新——前向传播算法和反向传播算法（BP算法）及其推导 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/71892752)
-+ [PyTorch documentation — PyTorch 2.1 documentation](https://pytorch.org/docs/stable/index.html)
-
-
-
-## 代码基本架构
+## Section 1. 代码基本架构
 
 代码架构上我积极参考了 PyTorch 的文档，实现了一个 torch-like 的深度学习框架，各个模块的接口都尽量向 torch 看齐，能比较方便地实现可伸缩易调整的网络结构：
 
@@ -29,9 +16,9 @@ TODO:
 + `model` 模块是使用框架搭建的自定义模型，包含模型结构、训练逻辑、模型存取等。
 + `init` 模块中主要包含初始化时使用的函数，包括设置随机种子、日志设置、数据预处理等。
 
-为了加速和方便计算表示，我使用了 `numpy` 库进行数学计算，并使用 `numpy.ndarray` 完全代替 `torch.Tensor` 进行向量化计算。
+为了加速和方便计算表示，我使用了 `numpy` 库进行数学计算，并使用 `numpy.ndarray` 代替 `torch.Tensor` 进行向量化计算，使用 `numpy` 让性能不至于太低。
 
-下面挑选代码中最重要的一些类进行分析，为节省字数，其中所有的注释都被删去，具体注释详见源码。
+下面挑选代码中最重要的一些类进行分析，为节省字数，代码中所有的注释都被删去，具体注释详见源码。
 
 ### Linear
 
@@ -60,7 +47,9 @@ class Linear(Module):
         return np.matmul(grads, self.params["weight"].T)
 ```
 
-线性层很大程度地参考了 PyTorch 文档的定义，
+线性层很大程度地参考了 PyTorch 文档的定义，但是矩阵计算采用 $y=xA+b$ 式（不同于文档提到的 $y=xA^{T}+b$ ），可以使用 `input_size` 和 `output_size` 指定每个 sample 的输入输出情况。在参数的初始化方面，参考 PyTorch 文档使用 $U(-\sqrt k, \sqrt k)$ ，其中 $k=\frac{1}{\text{input\_size}}$ 。
+
+这样初始化也较符合 Project1 文档和老师上课的说法，将初始参数调得比较小，能比较好达到收敛。
 
 ### Softmax
 
@@ -72,6 +61,8 @@ def softmax(input, dim):
     softmax_scores = exp_logits / np.sum(exp_logits, axis=dim, keepdims=True)
     return softmax_scores
 ```
+
+注意到这里的 softmax 计算其实先对每个 sample 减去了分量中的最大值，然后再计算 exp ，与课件上或 PyTorch 文档中的定义不同。这么做是为了避免因输入数值较大而出现上溢，而且这么做不会影响 softmax 计算的合理性，这点将在下一节证明。
 
 所以 `Softmax` 的前向传播就是简单地直接调用 `softmax` ，反向传播利用保存下来的 `softmax_scores` ：
 
@@ -90,7 +81,7 @@ class Softmax(Module):
         return self.softmax_scores * (grads - sum)
 ```
 
-
+对 `ndarray` 使用 softmax 后，在指定维度上的分量将会在 $[0, 1)$ 范围内，并且这些分量和为 1 。
 
 ### CrossEntropyLoss
 
@@ -124,7 +115,11 @@ class CrossEntropyLoss(Module):
         return grads / self.batch_size
 ```
 
+参考 PyTorch 文档，输入的每个 sample 不需要分量求和为 1 ，因为文档提到 `nn.CrossEntropyLoss` 实际会先计算 `nn.LogSoftmax` 然后计算 `nn.NLLLoss` ，也就是会先对输入进行 softmax ，然后再计算交叉熵损失函数。所以在多分类问题中，若使用 `CrossEntropyLoss` 作为损失函数，则模型的输出层实际无需再添加 `Softmax` 层。
 
+同时，这里实现的 `CrossEntropyLoss` 也支持两种 `target` 形式，可以是形如 `(batch_size)` 的一维数组，存储每个 sample 的目标分类索引，也可以是形如 `(batch_size, class_num)` 的矩阵，存储每个 sample 的各个类的分类概率，例如 one-hot 编码。
+
+对于 `labels`（也即 `target` ）是 `(batch_size)` 的一维数组时，代码中利用了 `numpy` 的高级索引—— `self.softmax_scores[np.arange(self.batch_size), labels]` 简化代码编写，提高计算效率。
 
 ### MSELoss
 
@@ -148,7 +143,7 @@ class MSELoss(Module):
         return loss_grad_predicts / self.batch_size
 ```
 
-
+比较简单的均方误差损失函数，默认计算平均损失，但是和 PyTorch 文档中的 $l_n=(x_n-y_n)^2$ 不同，这里采用课件上的 $l_n=\frac{1}{2}(x_n-y_n)^2$ 式。
 
 ### Sigmoid
 
@@ -167,7 +162,7 @@ class Sigmoid(Module):
         return np.multiply(grads, outputs_grad_inputs)
 ```
 
-
+简单的 `Sigmoid` 实现，也叫做 `Logistic` 函数，作为激活层。
 
 ### ReLU
 
@@ -186,7 +181,7 @@ class ReLU(Module):
         return np.multiply(grads, outputs_grad_inputs)
 ```
 
-
+除了课件上提到的 `Sigmoid` 模块，我还实现了 `ReLU` 激活函数，考虑到 `Sigmoid` 容易面临梯度消失的问题，所以实际代码中我更多使用 `ReLU` 。但是 `ReLU` 也可能导致神经元死亡，对应部分参数不更新，训练模型时需要谨慎调整超参。
 
 ### Optimizer
 
@@ -217,7 +212,31 @@ class Optimizer:
 
 ### DataLoader
 
-## 对反向传播算法的理解
+
+
+### Others
+
+在这里简单介绍一下
+
+## Section 2. 对反向传播算法的理解
 
 
 
+### Linear
+
+线性层是代码中的核心模块，也是实验中神经网络的主要组成部分。
+
+
+
+## Section 3. 
+
+
+
+## 参考资料
+
++ [PyTorch documentation — PyTorch 2.1 documentation](https://pytorch.org/docs/stable/index.html)
++ [nndl/nndl.github.io: 《神经网络与深度学习》 邱锡鹏著 Neural Network and Deep Learning](https://github.com/nndl/nndl.github.io)
++ [温故知新——前向传播算法和反向传播算法（BP算法）及其推导 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/71892752)
++ [带你从零掌握迭代器及构建最简 DataLoader - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/340465632)
++ [DataLoader原理解析 (最简单版本实现) - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/549850590)
++ [PyTorch36.DataLoader源代码剖析 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/169497395)
