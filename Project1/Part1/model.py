@@ -45,7 +45,7 @@ class ANN(Module):
 
 class MLP:
     def __init__(self, input_dim, output_dim):
-        layer_sizes = [input_dim, 32, 16, 8, output_dim]
+        layer_sizes = [input_dim, 64, 32, 16, output_dim]
         self.model = ANN(layer_sizes)
         self.best = {"train_loss": float("inf"), "valid_loss": float("inf")}  # 记录最佳结果
 
