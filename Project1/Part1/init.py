@@ -135,9 +135,9 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
         y = y[random_indices]
 
     print("Splitting train, validation, test dataset")
-    train_num = int(num_samples * 0.85)
-    valid_num = int(num_samples * 0.1)
-    test_num = num_samples - train_num - valid_num
+    train_num = int(num_samples * 0.9)
+    valid_num = num_samples - train_num
+    test_num = 0
 
     print("Saving data")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
