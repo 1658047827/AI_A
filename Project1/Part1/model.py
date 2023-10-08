@@ -136,7 +136,12 @@ class MLPClassifier:
         layer_sizes = [input_dim, 1024, 2048, 512, output_dim]
         # 若使用 CrossEntropyLoss 作为损失函数，则模型最后不需要加 Softmax
         self.model = ANN(layer_sizes)  # 激活函数用 ReLU 效果好一点
-        self.best = {"train_loss": float("inf"), "valid_loss": float("inf")}  # 记录最佳结果
+        self.best = {
+            "train_loss": float("inf"),
+            "valid_loss": float("inf"),
+            "train_acc": 0.0,
+            "valid_acc": 0.0,
+        }  # 记录最佳结果
 
     def evaluate(self, valid_loader, criterion, metric):
         result = {}

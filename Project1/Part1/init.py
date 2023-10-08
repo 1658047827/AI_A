@@ -1,4 +1,5 @@
 import os
+import sys
 import random
 import json
 import logging
@@ -30,7 +31,7 @@ def set_log(file_path):
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
 
-    log_handlers = [logging.StreamHandler()]
+    log_handlers = [logging.StreamHandler(stream=sys.stdout)]
     if file_path is not None:
         log_handlers.append(logging.FileHandler(file_path))
 
