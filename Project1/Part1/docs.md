@@ -1,5 +1,3 @@
-按照torch的风格，把Softmax和CELoss结合起来放到CrossEntropyLoss模块，也就是nn.CrossEntropyLoss() = nn.LogSoftmax() + nn.NLLLoss()
-
 TODO: 
 
 + Linear添加控制是否使用bias参数
@@ -7,7 +5,6 @@ TODO:
 + 把Softmax和交叉熵等重要模块的求梯度补充在文档中，理解反向求导过程
 + 多分类为何使用CELoss而不使用MESLoss
 + 训练图片做标准化、归一化
-+ 主程序换成jupyter notebook
 
 ## Section 1. 代码基本架构
 
@@ -50,7 +47,7 @@ class Linear(Module):
         return np.matmul(grads, self.params["weight"].T)
 ```
 
-线性层很大程度地参考了 PyTorch 文档的定义，但是矩阵计算采用 $y=xA+b$ 式（不同于文档提到的 $y=xA^{T}+b$ ），可以使用 `input_size` 和 `output_size` 指定每个 sample 的输入输出情况。在参数的初始化方面，参考 PyTorch 文档使用 $U(-\sqrt k, \sqrt k)$ ，其中 $k=\frac{1}{\text{input\_size}}$ 。
+线性层很大程度地参考了 PyTorch 文档的定义，但是矩阵计算采用 $y=xA+b$ 式（不同于文档提到的 $y=xA^{T}+b$ ），可以使用 `input_size` 和 `output_size` 指定每个 sample 的输入输出维度。在参数的初始化方面，参考 PyTorch 文档使用 $U(-\sqrt k, \sqrt k)$ ，其中 $k=\frac{1}{\text{input\_size}}$ 。
 
 这样初始化也较符合 Project1 文档和老师上课的说法，将初始参数调得比较小，能比较好达到收敛。
 
@@ -87,6 +84,8 @@ class Softmax(Module):
 对 `ndarray` 使用 softmax 后，在指定维度上的分量将会在 $[0, 1)$ 范围内，并且这些分量和为 1 。
 
 ### CrossEntropyLoss
+
+`nn.CrossEntropyLoss` = `nn.LogSoftmax` + `nn.NLLLoss` 。
 
 ```python
 class CrossEntropyLoss(Module):
@@ -209,9 +208,7 @@ class Optimizer:
 
 按照 PyTorch 的文档，`Optimizer` 应当传入一个可迭代的 `params` 声明要被优化（调整）的模型权重，但是这又涉及到 torch 中的子模块注册机制，严格实现会增加很多意义不大的工作量。考虑到实验中只用到了类似 `ModuleList` 这样的结构，而且其中的子模块都是 `nn` 中的基本结构。故可以直接把整个 `model` 传入 `Optimizer` ，调整模型参数时直接遍历 `model.module_list` 即可。
 
-`step()` 方法应在模型反向传播后调用，其遍历各个子模块的参数，根据学习率和各层的梯度进行参数调整。
-
-`zero_grad()` 方法直接遍历各层模块并清零存储的梯度。
+`step()` 方法应在模型反向传播后调用，其遍历各个子模块的参数，根据学习率和各层的梯度进行参数调整。`zero_grad()` 方法直接遍历各层模块并清零存储的梯度。
 
 ### DataLoader
 
@@ -273,15 +270,114 @@ def default_collate(batch):
 
 ### Others
 
-在这里简单介绍一下
+在这里简单介绍一下自定义的网络结构 `ANN` ：
+
+```python
+class ANN(Module):
+    def __init__(self, layer_sizes):
+        super(ANN, self).__init__()
+        self.module_list = []
+        for i in range(len(layer_sizes) - 2):
+            self.module_list.append(Linear(layer_sizes[i], layer_sizes[i + 1]))
+            self.module_list.append(ReLU())
+        self.module_list.append(Linear(layer_sizes[-2], layer_sizes[-1]))
+
+    def forward(self, inputs):
+        for layer in self.module_list:
+            inputs = layer(inputs)
+        return inputs
+
+    def backward(self, grads):
+        for layer in reversed(self.module_list):
+            grads = layer.backward(grads)
+```
+
+结合传入的参数 `layer_sizes` ，利用之前的代码可以比较容易地搭建可调整的结构，前向传播是将前一层的输出作为下一层的输入，反向传播是将后面的梯度输入到前一层。整个结构顺序传播，主要使用类似 `nn.ModuleList` 的方式搭建。
 
 ## Section 2. 对反向传播算法的理解
 
+前馈神经网络具有很强的拟合能力，根据通用近似定理，只要隐藏层神经元的数量足够，它可以以任意的精度来近似任何一个定义在实数空间 $\R^D$ 中的有界闭集函数。而学习隐藏层参数一般使用梯度下降法，计算损失函数对参数的偏导数，若通过链式法则逐一对每个参数求偏导效率低，所以训练网络时常使用反向传播算法计算梯度。
 
+第 $l$ 层的误差项（目标函数关于该层输出的偏导数）可以通过第 $l+1$ 层的误差项计算得到，也就是误差可以反向传播。
+
+注：以下推导中涉及的矩阵求导全部使用 **分子布局** 。
 
 ### Linear
 
-线性层是代码中的核心模块，也是实验中神经网络的主要组成部分。
+线性层是代码中的核心模块，也是实验 Part1 中神经网络的主要组成部分。在代码中我使用表达式 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$（其中 $a^{(l-1)}$ 是一个行向量，来自前一层），假设该层的输出向量长度 $M_l$ ，令 $\mathcal{L}$ 是最终的损失函数，根据链式法则有：
+$$
+\frac{\partial\mathcal{L}}{\partial w_{ij}^{(l)}}=
+\frac{\partial \mathcal{L}}{\partial z^{(l)}} \cdot
+\frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}}\\
+\frac{\partial\mathcal{L}}{\partial b^{(l)}}=
+\frac{\partial \mathcal{L}}{\partial z^{(l)}} \cdot
+\frac{\partial z^{(l)}}{\partial b^{(l)}}
+$$
+首先计算 $\frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}}$ ，因为 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$ ，也就是 $z_j^{(l)} = \sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}}$ ，所以：
+$$
+\begin{aligned}
+\frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}} 
+& = \left[\frac{\partial z_1^{(l)}}{\partial w_{ij}^{(l)}},\dots,\frac{\partial z_j^{(l)}}{\partial w_{ij}^{(l)}},\dots, \frac{\partial z_{M_l}^{(l)}}{\partial w_{ij}^{(l)}} \right]^T\\
+& = \left[0,\cdots,\frac{\partial (\sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}})}{\partial w_{ij}^{(l)}},\cdots,0 \right]^T\\
+& = [0,\cdots,a_i^{(l-1)},\cdots,0]^T\\
+\end{aligned}
+$$
+注意其中 $a_i^{(l-1)}$ 是第 $j$ 个分量值。
+
+然后计算 $\frac{\partial z^{(l)}}{\partial b^{(l)}}$ ，因为 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$ ，则显然有：
+$$
+\begin{aligned}
+\frac{\partial z^{(l)}}{\partial b^{(l)}} & = I_{M_l}\quad \in \R^{M_l\times M_l}
+\end{aligned}
+$$
+为 $M_l\times M_l$ 的单位矩阵。
+
+根据 $z^{(l+1)}=a^{(l)}W^{(l+1)}+b^{(l+1)}$ 有：
+$$
+\frac{\partial z^{(l+1)}}{\partial a^{(l)}}=(W^{(l+1)})^T\quad \in \R^{M_{l+1}\times M_l}
+$$
+$a^{(l)}$ 代表第 $l$ 层的输出 $z^{(l)}$ 经过激活函数后的活性值，将会输入到下一个线性层。根据 $a^{(l)}=f_l(z^{(l)})$ （其中 $f_l(\cdot)$ 为按位计算函数），则有：
+$$
+\begin{aligned}
+ \frac{\partial a^{(l)}}{\partial z^{(l)}} & = \frac{\partial f_l(z^{(l)})}{\partial z^{(l)}}\\
+ & = \text{diag}(f_l'(z^{(l)})) \quad\in \R^{M_l\times M_l}
+\end{aligned}
+$$
+最后计算 $\delta^{(l)} = \frac{\partial \mathcal{L}}{\partial z^{(l)}}$ ，因为 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$ ，根据链式法则有：
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial z^{(l)}} & = 
+\frac{\partial \mathcal{L}}{\partial a^{(l)}} \cdot  \frac{\partial a^{(l)}}{\partial z^{(l)}}\\
+& = \left(\frac{\partial \mathcal{L}}{\partial z^{(l+1)}} \cdot
+\frac{\partial z^{(l+1)}}{\partial a^{(l)}}\right) \cdot
+\frac{\partial a^{(l)}}{\partial z^{(l)}} \\
+& = \left(\delta^{(l+1)} \cdot (W^{(l+1)})^T\right) \cdot \text{diag}(f_l'(y^{(l)}))\\
+\end{aligned}
+$$
+因此 $\frac{\partial \mathcal{L}}{\partial w_{ij}}$ 就可以被表示为：
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial w_{ij}} 
+& = \delta^{(l)} \cdot \frac{\partial z}{\partial w_{ij}}\\
+& = [\delta_1^{(l)},\cdots,\delta_j^{(l)},\cdots,\delta_{M_l}^{(l)}] \cdot [0,\cdots,a_i^{(l-1)},\cdots,0]^T\\
+& = a_i^{(l-1)}\cdot\delta_j^{(l)}
+\end{aligned}
+$$
+其中 $a_i^{(l-1)}\cdot\delta_j^{(l)}$ 相当于向量 $a^{(l-1)}$ 和向量 $\delta^{(l)}$ 的外积的第 $i,j$ 个元素，故上式可以改写为：
+$$
+\left[\frac{\partial \mathcal{L}}{\partial W}\right]_{ij}=\left[(a^{(l-1)})^T\cdot\delta^{(l)}\right]_{ij}
+$$
+因此，$\mathcal{L}$ 关于第 $l$ 层权重 $W^{(l)}$ 的梯度为：
+$$
+\frac{\partial \mathcal{L}}{\partial W}=(a^{(l-1)})^T\cdot\delta^{(l)}\quad \in \R^{M_{l-1}\times M_l}
+$$
+同理可得，$\mathcal{L}$ 关于第 $l$ 层偏置量 $b^{(l)}$ 的梯度为：
+$$
+\frac{\partial \mathcal{L}}{\partial b}=\delta^{(l)} \quad\in  \R^{M_l}
+$$
+实际代码中一层神经元的输入并不是一个行向量，而是一个 $(\text{batch\_size}, dim_{in})$ 的矩阵，但是梯度的表达式也几乎相同，在代码中使用 `numpy` 库的向量化运算可以简洁地表达。
+
+### CrossEntropyLoss
 
 
 

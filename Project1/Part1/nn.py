@@ -105,10 +105,14 @@ class Linear(Module):
         计算反向传播梯度。
 
         参数:
-        - grads (ndarray): 形如 (batch_size, output_size) 的二维数组，反向传播过来的梯度值。
+        - grads (ndarray): 形如 (batch_size, output_size) 的二维数组，反向传播过来的梯度值。\
+            若当前为第 $l$ 层，则这个传入的 grads 相当于 $\frac{\partial L}{\partial z^{(l)}}$ \
+            其中 $z^{(l)}$ 是本层的输出。
 
         返回:
-        - (ndarray): 形如 (batch_size, input_size) 的二维数组，根据链式法则计算的反向传播梯度。
+        - (ndarray): 形如 (batch_size, input_size) 的二维数组，根据链式法则计算的反向传播梯度。\
+            若当前为第 $l$ 层，则返回的相当于 $\frac{\partial L}{\partial a^{(l-1)}}$ ，其中 \
+            $a^{(l-1)}$ 是前一层激活层的输出，也是本层的输入。
         """
         # 损失函数模块的 backward() 就已经除以 self.batch_size 了，所以已经是平均梯度
         self.grads["weight"] = np.matmul(self.inputs.T, grads)
