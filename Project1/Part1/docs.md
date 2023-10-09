@@ -1,9 +1,9 @@
+# Part 1.
+
 TODO: 
 
 + Linear添加控制是否使用bias参数
-+ 理解Linear反向传播的过程（在docs.md中手写一遍）
 + 把Softmax和交叉熵等重要模块的求梯度补充在文档中，理解反向求导过程
-+ 多分类为何使用CELoss而不使用MESLoss
 + 训练图片做标准化、归一化
 
 ## Section 1. 代码基本架构
@@ -60,7 +60,7 @@ def softmax(input, dim):
 
 注意到这里的 softmax 计算其实先对每个 sample 减去了分量中的最大值，然后再计算 exp ，与课件上或 PyTorch 文档中的定义不同。这么做是为了避免因输入数值较大而出现上溢，而且这么做不会影响 softmax 计算的合理性，这点将在下一节证明。
 
-所以 `Softmax` 的前向传播就是简单地直接调用 `softmax` ，反向传播利用保存下来的 `softmax_scores` ：
+所以 `Softmax` 的前向传播就是简单地直接调用 `softmax` ，反向传播则利用保存下来的 `softmax_scores` ：
 
 ```python
 class Softmax(Module):
@@ -350,30 +350,60 @@ $$
 & = \left(\delta^{(l+1)} \cdot (W^{(l+1)})^T\right) \cdot \text{diag}(f_l'(y^{(l)}))\\
 \end{aligned}
 $$
-因此 $\frac{\partial \mathcal{L}}{\partial w_{ij}}$ 就可以被表示为：
+因此 $\frac{\partial \mathcal{L}}{\partial w_{ij}^{(l)}}$ 就可以被表示为：
 $$
 \begin{aligned}
-\frac{\partial \mathcal{L}}{\partial w_{ij}} 
-& = \delta^{(l)} \cdot \frac{\partial z}{\partial w_{ij}}\\
+\frac{\partial \mathcal{L}}{\partial w_{ij}^{(l)} } 
+& = \delta^{(l)} \cdot \frac{\partial z}{\partial w_{ij}^{(l)}}\\
 & = [\delta_1^{(l)},\cdots,\delta_j^{(l)},\cdots,\delta_{M_l}^{(l)}] \cdot [0,\cdots,a_i^{(l-1)},\cdots,0]^T\\
 & = a_i^{(l-1)}\cdot\delta_j^{(l)}
 \end{aligned}
 $$
 其中 $a_i^{(l-1)}\cdot\delta_j^{(l)}$ 相当于向量 $a^{(l-1)}$ 和向量 $\delta^{(l)}$ 的外积的第 $i,j$ 个元素，故上式可以改写为：
 $$
-\left[\frac{\partial \mathcal{L}}{\partial W}\right]_{ij}=\left[(a^{(l-1)})^T\cdot\delta^{(l)}\right]_{ij}
+\left[\frac{\partial \mathcal{L}}{\partial W^{(l)}}\right]_{ij}=\left[(a^{(l-1)})^T\cdot\delta^{(l)}\right]_{ij}
 $$
 因此，$\mathcal{L}$ 关于第 $l$ 层权重 $W^{(l)}$ 的梯度为：
 $$
-\frac{\partial \mathcal{L}}{\partial W}=(a^{(l-1)})^T\cdot\delta^{(l)}\quad \in \R^{M_{l-1}\times M_l}
+\frac{\partial \mathcal{L}}{\partial W^{(l)}}=(a^{(l-1)})^T\cdot\delta^{(l)}\quad \in \R^{M_{l-1}\times M_l}
 $$
 同理可得，$\mathcal{L}$ 关于第 $l$ 层偏置量 $b^{(l)}$ 的梯度为：
 $$
-\frac{\partial \mathcal{L}}{\partial b}=\delta^{(l)} \quad\in  \R^{M_l}
+\frac{\partial \mathcal{L}}{\partial b^{(l)}}=\delta^{(l)} \quad\in  \R^{M_l}
 $$
 实际代码中一层神经元的输入并不是一个行向量，而是一个 $(\text{batch\_size}, dim_{in})$ 的矩阵，但是梯度的表达式也几乎相同，在代码中使用 `numpy` 库的向量化运算可以简洁地表达。
 
+### Softmax
+
+上一节曾提到，`Softmax` 在代码中的实现方式和原公式有所不同，注意到：
+$$
+\frac{e^{x_i+c}}{\sum e^{x_i+c}}=\frac{e^c\cdot e^{x_i}}{e^c\cdot \sum e^{x_i}} = \frac{e^{x_i}}{\sum e^{x_i}}
+$$
+所以加或减一个常数不会影响 `Softmax` 的结果。
+
+
+
+// TODO 梯度
+
+
+
 ### CrossEntropyLoss
+
+交叉熵损失函数也是一个很重要的损失函数，在多分类任务中不可或缺。老师在上课时提到，多分类任务也可以使用 `MSELoss` ，但是使用 `CrossEntropyLoss` 是“标准答案”，因为 `MSELoss` 并没有那么适合分类问题。**多分类问题为何多用交叉熵** ，经过思考和查找资料，我认为：
+
++ 交叉熵的输入通常是类别概率分布，代表模型对各个分类的后验概率，衡量的是两个概率分布之间的差异（极大似然）。而均方误差的输入则是一个高维空间中的点位置，衡量的是模型预测点和真实点之间的距离。
+
++ 交叉熵只关心 $\hat{y}_p$ 是否更趋近 1 了，而均方误差除了与 $\hat{y}_p$ 有关，从取到最小值的方向看来，还会尽量希望剩下的预测概率相等。
+
+  在大多分类问题中，我们对类别与类别之间的关系（相似、相近等）是难以量化的，所以一般标签都是 one-hot 。在这个前提下，假如标签为 $[1,\ 0,\ 0]$ ，均方误差会认为 $[0.8,\ 0.1,\ 0.1]$ 比 $[0.8,\ 0.15,\ 0.05]$ 更好，也就是平均比有倾向性更好。但实际上这是有悖常识的，例如在分类 ["cat", "tiger", "pig"] 上，如果正确标签是猫，剩下的预测概率中显然应当老虎会比猪更有倾向性。
+
++ 在一个极端的二分类例子中，令 $\hat{y}_i=\sigma(\sum w_ix_i+b)$ ，$\sigma$ 是 `Sigmoid` 。如果正确标签是 $[0,\ 1]$ ，但预测结果是 $[1,\ 0]$ ，使用均方误差作为损失函数 $L = \frac{1}{2n}\sum (y_i-\hat{y}_i)^2$ ，则有：
+  $$
+  \frac{\partial L}{\partial w_i} = \frac{\partial L}{\partial \hat{y}_i}\cdot \frac{\partial \hat{y}_i}{\partial(\sum w_ix_i+b)} \cdot x_i = -(y_i-\hat{y}_i)(\hat{y}_i\cdot (1-\hat{y}_i))x_i
+  $$
+  代入数值后发现梯度为 0 ，这显然是不合理的。
+
++ 邱锡鹏老师的《神经网络与深度学习》中，**3.6 损失函数对比** 中也有提及。
 
 
 
@@ -389,3 +419,4 @@ $$
 + [带你从零掌握迭代器及构建最简 DataLoader - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/340465632)
 + [DataLoader原理解析 (最简单版本实现) - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/549850590)
 + [PyTorch36.DataLoader源代码剖析 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/169497395)
++ [直观理解为什么分类问题用交叉熵损失而不用均方误差损失?-腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1554408)
