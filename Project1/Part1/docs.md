@@ -27,24 +27,20 @@ class Linear(Module):
     def __init__(self, input_size, output_size):
         super(Linear, self).__init__()
         self.inputs = None
-        self.params = {"weight": None, "bias": None}
-        self.grads = {"weight": None, "bias": None}
+        self.params = {"W": None, "b": None}
+        self.grads = {"W": None, "b": None}
         sqrt_k = np.sqrt(1 / input_size)
-        self.params["weight"] = np.random.uniform(
-            low=-sqrt_k, high=sqrt_k, size=(input_size, output_size)
-        )
-        self.params["bias"] = np.random.uniform(
-            low=-sqrt_k, high=sqrt_k, size=(1, output_size)
-        )
+        self.params["W"] = np.random.uniform(-sqrt_k, sqrt_k, (input_size, output_size))
+        self.params["b"] = np.random.uniform(-sqrt_k, sqrt_k, (1, output_size))
 
     def forward(self, inputs):
         self.inputs = inputs
-        return np.matmul(self.inputs, self.params["weight"]) + self.params["bias"]
+        return np.matmul(self.inputs, self.params["W"]) + self.params["b"]
 
     def backward(self, grads):
-        self.grads["weight"] = np.matmul(self.inputs.T, grads)
-        self.grads["bias"] = np.sum(grads, axis=0)
-        return np.matmul(grads, self.params["weight"].T)
+        self.grads["W"] = np.matmul(self.inputs.T, grads)
+        self.grads["b"] = np.sum(grads, axis=0)
+        return np.matmul(grads, self.params["W"].T)
 ```
 
 线性层很大程度地参考了 PyTorch 文档的定义，但是矩阵计算采用 $y=xA+b$ 式（不同于文档提到的 $y=xA^{T}+b$ ），可以使用 `input_size` 和 `output_size` 指定每个 sample 的输入输出维度。在参数的初始化方面，参考 PyTorch 文档使用 $U(-\sqrt k, \sqrt k)$ ，其中 $k=\frac{1}{\text{input\_size}}$ 。

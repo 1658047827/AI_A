@@ -86,19 +86,15 @@ class Linear(Module):
     ):
         super(Linear, self).__init__()
         self.inputs = None
-        self.params = {"weight": None, "bias": None}
-        self.grads = {"weight": None, "bias": None}
+        self.params = {"W": None, "b": None}
+        self.grads = {"W": None, "b": None}
         sqrt_k = np.sqrt(1 / input_size)
-        self.params["weight"] = np.random.uniform(
-            low=-sqrt_k, high=sqrt_k, size=(input_size, output_size)
-        )
-        self.params["bias"] = np.random.uniform(
-            low=-sqrt_k, high=sqrt_k, size=(1, output_size)
-        )
+        self.params["W"] = np.random.uniform(-sqrt_k, sqrt_k, (input_size, output_size))
+        self.params["b"] = np.random.uniform(-sqrt_k, sqrt_k, (1, output_size))
 
     def forward(self, inputs):
         self.inputs = inputs
-        return np.matmul(self.inputs, self.params["weight"]) + self.params["bias"]
+        return np.matmul(self.inputs, self.params["W"]) + self.params["b"]
 
     def backward(self, grads):
         """
@@ -115,9 +111,9 @@ class Linear(Module):
             $a^{(l-1)}$ 是前一层激活层的输出，也是本层的输入。
         """
         # 损失函数模块的 backward() 就已经除以 self.batch_size 了，所以已经是平均梯度
-        self.grads["weight"] = np.matmul(self.inputs.T, grads)
-        self.grads["bias"] = np.sum(grads, axis=0)
-        return np.matmul(grads, self.params["weight"].T)
+        self.grads["W"] = np.matmul(self.inputs.T, grads)
+        self.grads["b"] = np.sum(grads, axis=0)
+        return np.matmul(grads, self.params["W"].T)
 
 
 class MSELoss(Module):
