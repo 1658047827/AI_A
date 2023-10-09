@@ -57,10 +57,6 @@ class MLP:
             valid_loss += criterion(predicts, batch["y"])
         valid_loss /= len(valid_loader)
         result["valid_loss"] = valid_loss
-
-        if metric is not None:
-            raise NotImplementedError
-
         return result
 
     def fit(
