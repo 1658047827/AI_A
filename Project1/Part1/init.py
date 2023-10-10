@@ -117,7 +117,9 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
         for bmp in os.listdir(item_path):
             bmp_path = os.path.join(item_path, bmp)
             img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+
             # TODO: 数据增强 & 进行数据的归一化
+            
             flatten_img = img.flatten()
             x_list.append(flatten_img)
             y_list.append(index)
@@ -135,10 +137,9 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
         x = x[random_indices]
         y = y[random_indices]
 
-    print("Splitting train, validation, test dataset")
+    print("Splitting train, validation dataset")
     train_num = int(num_samples * 0.9)
     valid_num = num_samples - train_num
-    test_num = 0
 
     print("Saving data")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
@@ -146,10 +147,8 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
         data_path,
         x_train=x[:train_num],
         y_train=y[:train_num],
-        x_valid=x[train_num : train_num + valid_num],
-        y_valid=y[train_num : train_num + valid_num],
-        x_test=x[-test_num:],
-        y_test=y[-test_num:],
+        x_valid=x[-valid_num:],
+        y_valid=y[-valid_num:],
     )
 
 
