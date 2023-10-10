@@ -2,7 +2,6 @@
 
 TODO: 
 
-+ Linear添加控制是否使用bias参数
 + 把Softmax和交叉熵等重要模块的求梯度补充在文档中，理解反向求导过程
 + 训练图片做标准化、归一化
 
@@ -294,7 +293,7 @@ class ANN(Module):
 
 前馈神经网络具有很强的拟合能力，根据通用近似定理，只要隐藏层神经元的数量足够，它可以以任意的精度来近似任何一个定义在实数空间 $\R^D$ 中的有界闭集函数。而学习隐藏层参数一般使用梯度下降法，计算损失函数对参数的偏导数，若通过链式法则逐一对每个参数求偏导效率低，所以训练网络时常使用反向传播算法计算梯度。
 
-第 $l$ 层的误差项（目标函数关于该层输出的偏导数）可以通过第 $l+1$ 层的误差项计算得到，也就是误差可以反向传播。
+第 $l$ 层的误差项（损失关于该层输出的偏导数 $\delta^{(l)} = \frac{\partial \mathcal{L}}{\partial z^{(l)}}$ ）可以通过第 $l+1$ 层的误差项计算得到，也就是误差可以反向传播。
 
 注：以下推导中涉及的矩阵求导全部使用 **分子布局** 。
 
@@ -371,7 +370,7 @@ $$
 $$
 \frac{\partial \mathcal{L}}{\partial b^{(l)}}=\delta^{(l)} \quad\in  \R^{M_l}
 $$
-实际代码中一层神经元的输入并不是一个行向量，而是一个 $(\text{batch\_size}, dim_{in})$ 的矩阵，但是梯度的表达式也几乎相同，在代码中使用 `numpy` 库的向量化运算可以简洁地表达。
+实际代码中一层神经元的输入并不是一个行向量，而是一个 $(\text{batch\_size},\ dim_{in})$ 的矩阵，但是梯度的表达式也几乎相同，在代码中使用 `numpy` 库的向量化运算可以简洁地表达。
 
 ### Softmax
 
@@ -381,21 +380,85 @@ $$
 $$
 所以加或减一个常数不会影响 `Softmax` 的结果。
 
-
-
-// TODO 梯度
-
-
+虽然在代码中使用表达式 $e^{x_i-\max{x}}/\sum e^{x_i-\max{x}}$ ，但是这里不妨使用原始公式进行推导，因为实际上加减一个常数并不影响导数的形式。假设输入的 $x$ 是行向量，输出的 $y$ 也是行向量，长度均为 $M$ ，在 **分子布局** 下有：
+$$
+\frac{\partial y}{\partial x} = 
+\left[
+\begin{matrix}
+\frac{\partial y_1}{\partial x_1} & \frac{\partial y_1}{\partial x_2} & \cdots & \frac{\partial y_1}{\partial x_M}\\
+\frac{\partial y_2}{\partial x_1} & \frac{\partial y_2}{\partial x_2} & \cdots & \frac{\partial y_2}{\partial x_M}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\partial y_M}{\partial x_1} & \frac{\partial y_M}{\partial x_2} & \cdots & \frac{\partial y_M}{\partial x_M} 
+\end{matrix}
+\right]
+$$
+对于 $\frac{\partial y_k}{\partial x_k}$ 来说有：
+$$
+\begin{aligned}
+\frac{\partial y_k}{\partial x_k} & = \frac{\partial \frac{e^{x_k}}{\sum_i e^{x_i}}}{\partial x_k}\\
+& = \frac{\left(\frac{\partial e^{x_k}}{\partial x_k}\cdot \sum_i e^{x_i}-e^{x_k}\frac{\partial \sum_i e^{x_i}}{\partial x_k}\right)}{(\sum_i e^{x_i})^2} \\
+& = \frac{e^{x_k}}{\sum_i e^{x_i}} \cdot \left( 1- \frac{e^{x_k}}{\sum_i e^{x_i}} \right)\\
+& = y_k\cdot(1-y_k)
+\end{aligned}
+$$
+对于 $\frac{\partial y_j}{\partial x_k}$ 其中 $j \neq k$ 来说有：
+$$
+\begin{aligned}
+\frac{\partial y_j}{\partial x_k} & = \frac{\partial \frac{e^{x_j}}{\sum_i e^{x_i}}}{\partial x_k}\\
+& = \frac{-e^{x_j}e^{x_k}}{(\sum_i e^{x_i})^2}\\
+& = -\frac{e^{x_j}}{\sum_i e^{x_i}} \cdot \frac{e^{x_k}}{\sum_i e^{x_i}}\\
+& = -y_j\cdot y_k
+\end{aligned}
+$$
+在反向传播算法中，$\delta^{(l)}$ 是由后一层传入的误差项，也就是损失关于本层输出的偏导数：
+$$
+\delta^{(l)}=\left[\frac{\partial \mathcal{L}}{\partial y_1}, \cdots, \frac{\partial \mathcal{L}}{\partial y_M}\right]
+$$
+根据链式法则有：
+$$
+\delta^{(l-1)}
+=\frac{\partial \mathcal{L}}{\partial x}
+=\frac{\partial \mathcal{L}}{\partial y}\cdot \frac{\partial y}{\partial x}
+= \delta^{(l)} \cdot \frac{\partial y}{\partial x}
+$$
+也就是有：
+$$
+\begin{aligned}
+\delta^{(l-1)} & = \delta^{(l)} \cdot \frac{\partial y}{\partial x}\\
+& = \left[\frac{\partial \mathcal{L}}{\partial y_1}, \cdots, \frac{\partial \mathcal{L}}{\partial y_k}, \cdots, \frac{\partial \mathcal{L}}{\partial y_M}\right] 
+\left[
+\begin{matrix}
+\frac{\partial y_1}{\partial x_1} & \frac{\partial y_1}{\partial x_2} & \cdots & \frac{\partial y_1}{\partial x_M}\\
+\frac{\partial y_2}{\partial x_1} & \frac{\partial y_2}{\partial x_2} & \cdots & \frac{\partial y_2}{\partial x_M}\\
+\vdots & \vdots & \ddots & \vdots\\
+\frac{\partial y_M}{\partial x_1} & \frac{\partial y_M}{\partial x_2} & \cdots & \frac{\partial y_M}{\partial x_M} 
+\end{matrix}
+\right] \\
+& = \left[ \frac{\partial \mathcal{L}}{\partial x_1},\cdots,\frac{\partial \mathcal{L}}{\partial x_k},\cdots,\frac{\partial \mathcal{L}}{\partial x_M} \right]
+\end{aligned}
+$$
+显然，对于 $\frac{\partial \mathcal{L}}{\partial x_k}$ 有：
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial x_k} 
+& = \sum_{j=1}^{M} (\frac{\partial \mathcal{L}}{\partial y_j}\cdot \frac{\partial y_j}{\partial x_k}) \\
+& = -\sum_{j=1,j\neq k}^{M} \frac{\partial \mathcal{L}}{\partial y_j} \cdot y_j\cdot y_k + \frac{\partial \mathcal{L}}{\partial y_k} \cdot y_k\cdot(1-y_k) \\
+& = y_k\cdot\left( \sum_{j=1}^{M} \frac{\partial \mathcal{L}}{\partial y_j}\cdot (-y_j) + \frac{\partial \mathcal{L}}{\partial y_k}\right) \\
+& = y_k\cdot\left( \frac{\partial \mathcal{L}}{\partial y_k} - \sum_{j=1}^{M} \left(\frac{\partial \mathcal{L}}{\partial y_j}\cdot y_j\right) \right)
+\end{aligned}
+$$
 
 ### CrossEntropyLoss
 
-交叉熵损失函数也是一个很重要的损失函数，在多分类任务中不可或缺。老师在上课时提到，多分类任务也可以使用 `MSELoss` ，但是使用 `CrossEntropyLoss` 是“标准答案”，因为 `MSELoss` 并没有那么适合分类问题。**多分类问题为何多用交叉熵** ，经过思考和查找资料，我认为：
+交叉熵损失函数也是一个很重要的损失函数，在多分类任务中不可或缺。老师在上课时提到，多分类任务也可以使用 `MSELoss` ，但是使用 `CrossEntropyLoss` 是“标准答案”，因为 `MSELoss` 并没有那么适合分类问题。**多分类问题为何建议用交叉熵损失函数** ，经过思考和查找资料，我认为：
 
 + 交叉熵的输入通常是类别概率分布，代表模型对各个分类的后验概率，衡量的是两个概率分布之间的差异（极大似然）。而均方误差的输入则是一个高维空间中的点位置，衡量的是模型预测点和真实点之间的距离。
 
 + 交叉熵只关心 $\hat{y}_p$ 是否更趋近 1 了，而均方误差除了与 $\hat{y}_p$ 有关，从取到最小值的方向看来，还会尽量希望剩下的预测概率相等。
 
-  在大多分类问题中，我们对类别与类别之间的关系（相似、相近等）是难以量化的，所以一般标签都是 one-hot 。在这个前提下，假如标签为 $[1,\ 0,\ 0]$ ，均方误差会认为 $[0.8,\ 0.1,\ 0.1]$ 比 $[0.8,\ 0.15,\ 0.05]$ 更好，也就是平均比有倾向性更好。但实际上这是有悖常识的，例如在分类 ["cat", "tiger", "pig"] 上，如果正确标签是猫，剩下的预测概率中显然应当老虎会比猪更有倾向性。
+  在大多分类问题中，我们对类别与类别之间的关系（相似、相近等）是难以量化的，所以一般标签都是 one-hot 。在这个前提下，假如标签为 $[1,\ 0,\ 0]$ ，均方误差会认为 $[0.8,\ 0.1,\ 0.1]$ 比 $[0.8,\ 0.15,\ 0.05]$ 更好，也就是平均比有倾向性更好。
+
+  但实际上这是有悖常识的，例如在分类 `["cat", "tiger", "pig"]` 中，如果正确标签是 `"cat"` ，预测结果中 `"tiger"` 通常会比 `"pig"` 有更高的概率，因为 `"tiger"` 的特征和 `"cat"` 更接近。
 
 + 在一个极端的二分类例子中，令 $\hat{y}_i=\sigma(\sum w_ix_i+b)$ ，$\sigma$ 是 `Sigmoid` 。如果正确标签是 $[0,\ 1]$ ，但预测结果是 $[1,\ 0]$ ，使用均方误差作为损失函数 $L = \frac{1}{2n}\sum (y_i-\hat{y}_i)^2$ ，则有：
   $$
@@ -405,7 +468,36 @@ $$
 
 + 邱锡鹏老师的《神经网络与深度学习》中，**3.6 损失函数对比** 中也有提及。
 
+因此，在多分类问题中更多时候是使用 `CrossEntropyLoss` 作为损失函数。
 
+在代码的实现中，我按照 `PyTorch` 文档的说明和课件的提示，将 softmax 和交叉熵损失的计算都放在 `CrossEntropyLoss` 模块中，所以在推导该模块的反向传播的时候，可以利用 `Softmax` 的求导结果。假设输入 `CrossEntropyLoss` 的 $x$ 是一个行向量，先经过 `softmax` 函数计算出行向量 $\hat{y}$ ，然后与正确结果 $y$ 计算出交叉熵损失，为了方便不妨假设这里 $y$ 是 one-hot 编码的行向量。
+
+首先计算交叉熵的导数，交叉熵的公式是 $\mathcal{L} = -\sum_{c=1}^{M} y_c \log \hat{y}_c$ ，其导数：
+$$
+\frac{\partial \mathcal{L}}{\partial \hat{y}_c} = -\frac{y_c}{\hat{y}_c}
+$$
+将这个式子带入上面计算出来的 $\frac{\partial \mathcal{L}}{\partial x_k} $ 中，可以得到：
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial x_k} 
+& = \hat{y}_k\cdot\left( \frac{\partial \mathcal{L}}{\partial \hat{y}_k} - \sum_{j=1}^{M} \left(\frac{\partial \mathcal{L}}{\partial \hat{y}_j}\cdot \hat{y}_j\right) \right) \\
+& = -y_k + \hat{y}_k \cdot \left(\sum_{j=1}^{M} y_j\right)
+\end{aligned}
+$$
+由于 $y$ 是 one-hot 编码（或者是概率分布），所以应当有 $\sum_{j=1}^{M} y_j = 1$ ，则：
+$$
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial x_k} 
+& = -y_k + \hat{y}_k \cdot \left(\sum_{j=1}^{M} y_j\right) \\
+& = \hat{y}_k - y_k \\
+& = \frac{e^{x_k}}{\sum_i e^{x_i}} - y_k
+\end{aligned}
+$$
+直接用向量表示就是：
+$$
+\frac{\partial \mathcal{L}}{\partial x} = \hat{y} - y 
+$$
+这样就得出了损失关于 `CrossEntropyLoss` 输入的偏导数了。
 
 ## Section 3. 
 

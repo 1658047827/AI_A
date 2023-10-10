@@ -79,11 +79,7 @@ class Softmax(Module):
 
 
 class Linear(Module):
-    def __init__(
-        self,
-        input_size: int,
-        output_size: int,
-    ):
+    def __init__(self, input_size, output_size):
         super(Linear, self).__init__()
         self.inputs = None
         self.params = {"W": None, "b": None}
@@ -93,6 +89,9 @@ class Linear(Module):
         self.params["b"] = np.random.uniform(-sqrt_k, sqrt_k, (1, output_size))
 
     def forward(self, inputs):
+        """
+        $z^{(l)} = a^{(l-1)}W^{(l)} + b^{(l)}$
+        """
         self.inputs = inputs
         return np.matmul(self.inputs, self.params["W"]) + self.params["b"]
 
