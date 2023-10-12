@@ -90,7 +90,22 @@ def dump_args(args, record_path, mode):
     return record_path
 
 
-def data_preprocess(raw_data_path, data_path, shuffle=True):
+def random_rotate(image, max_angle):
+    angle = random.uniform(-max_angle, max_angle)
+    h, w = image.shape[:2]
+    center = (w // 2, h // 2)
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    rotated_image = cv2.warpAffine(image, rotation_matrix, (w, h))
+    return rotated_image
+
+
+def add_noise(image, noise_stddev=1):
+    noise = np.random.normal(0, noise_stddev, image.shape).astype(np.uint8)
+    noisy_image = cv2.add(image, noise)
+    return noisy_image
+
+
+def data_preprocess(raw_data_path, data_path, augment=False):
     x_list = []
     y_list = []
     for item in os.listdir(raw_data_path):
@@ -99,38 +114,92 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
         for bmp in os.listdir(item_path):
             bmp_path = os.path.join(item_path, bmp)
             img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
-
-            # TODO: 数据增强 & 进行数据的归一化
-
             x_list.append(img)
             y_list.append(index)
 
-    x = np.vstack(x_list)
+    x = np.stack(x_list, axis=0)
     print("x generated, shape: {}".format(x.shape))
     y = np.array(y_list)
     print("y generated, shape: {}".format(y.shape))
     num_samples = x.shape[0]
 
-    if shuffle:
-        print("Shuffling x and y")
-        random_indices = np.arange(num_samples)
-        np.random.shuffle(random_indices)
-        x = x[random_indices]
-        y = y[random_indices]
+    print("Shuffling x and y")
+    random_indices = np.random.permutation(num_samples)
+    x = x[random_indices]
+    y = y[random_indices]
 
-    print("Splitting train, validation, test dataset")
-    train_num = int(num_samples * 0.9)
+    print("Splitting train and validation dataset")
+    train_num = int(num_samples * 0.9)  # 9:1
     valid_num = num_samples - train_num
-    test_num = 0
+    x_valid = x[-valid_num:]
+    y_valid = y[-valid_num:]
+
+    if augment:
+        print("Augmenting train dataset")
+        x_augment_list = []
+        y_augment_list = []
+        for i in range(train_num):
+            # 原始图片
+            x_augment_list.append(x[i])
+            y_augment_list.append(y[i])
+            # 添加噪声后的图片
+            x_augment_list.append(add_noise(x[i]))
+            y_augment_list.append(y[i])
+
+        x_train = np.stack(x_augment_list, axis=0)
+        print("x_train_aug generated, shape: {}".format(x_train.shape))
+        y_train = np.array(y_augment_list)
+        print("y_train_aug generated, shape: {}".format(y_train.shape))
+        train_aug_size = x_train.shape[0]
+
+        print("Shuffling x_train_aug and y_train_aug")
+        indices = np.random.permutation(train_aug_size)
+        x_train = x_train[indices]
+        y_train = y_train[indices]
+    else:
+        x_train = x[:train_num]
+        y_train = y[:train_num]
 
     print("Saving data")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
     np.savez(
         data_path,
-        x_train=x[:train_num],
-        y_train=y[:train_num],
-        x_valid=x[train_num : train_num + valid_num],
-        y_valid=y[train_num : train_num + valid_num],
-        x_test=x[-test_num:],
-        y_test=y[-test_num:],
+        x_train=x_train,
+        y_train=y_train,
+        x_valid=x_valid,
+        y_valid=y_valid,
     )
+
+
+if __name__ == "__main__":
+    current_file_path = os.path.abspath(__file__)
+    current_directory = os.path.dirname(current_file_path)
+    os.chdir(current_directory)
+
+    seed_everything(42)
+
+    # data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
+
+    # item_path = os.path.join("./data/raw", "1")
+    # bmp_path = os.path.join(item_path, "2.bmp")
+    # img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+    # cv2.imshow("img", img)
+    # cv2.waitKey(0)  # wait for any key
+    # cv2.imshow("rotated_img", random_rotate(img, 90))
+    # cv2.waitKey(0)  # wait for any key
+    # cv2.imshow("noisy_img", add_noise(img))
+    # cv2.waitKey(0)  # wait for any key
+
+    data_npz = np.load("./data/data.npz")
+    print(data_npz["x_train"].shape)
+    print(data_npz["y_train"].shape)
+    print(data_npz["x_valid"].shape)
+    print(data_npz["y_valid"].shape)
+
+    data_aug0_npz = np.load("./data/data_aug0.npz")
+    print(data_aug0_npz["x_train"].shape)
+    print(data_aug0_npz["y_train"].shape)
+    print(data_aug0_npz["x_valid"].shape)
+    print(data_aug0_npz["y_valid"].shape)
+
+    exit(0)
