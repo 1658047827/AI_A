@@ -1,15 +1,18 @@
 from torch.utils.data import Dataset
-from torchvision.transforms import Resize, ToTensor
 
 
 class CharDataset(Dataset):
-    def __init__(self, x, y):
+    def __init__(self, x, y, transform=None):
         self.x = x
         self.y = y
-        self.len = x.shape[0]
+        self.transform = transform
 
     def __getitem__(self, index):
-        return {"x": self.x[index], "y": self.y[index]}
+        image = self.x[index]
+        label = self.y[index]
+        if self.transform is not None:
+            image = self.transform(image)
+        return image, label
 
     def __len__(self):
-        return self.len
+        return self.x.shape[0]

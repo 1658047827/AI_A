@@ -1,0 +1,2 @@
+class ResNet:
+    pass

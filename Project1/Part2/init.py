@@ -118,9 +118,8 @@ def data_preprocess(raw_data_path, data_path, augment=False):
             y_list.append(index)
 
     x = np.stack(x_list, axis=0)
-    print("x generated, shape: {}".format(x.shape))
     y = np.array(y_list)
-    print("y generated, shape: {}".format(y.shape))
+    print("x.shape: {}, y.shape: {}".format(x.shape, y.shape))
     num_samples = x.shape[0]
 
     print("Shuffling x and y")
@@ -139,7 +138,7 @@ def data_preprocess(raw_data_path, data_path, augment=False):
         x_augment_list = []
         y_augment_list = []
         for i in range(train_num):
-            # 原始图片
+            # 原图片
             x_augment_list.append(x[i])
             y_augment_list.append(y[i])
             # 添加噪声后的图片
@@ -147,9 +146,8 @@ def data_preprocess(raw_data_path, data_path, augment=False):
             y_augment_list.append(y[i])
 
         x_train = np.stack(x_augment_list, axis=0)
-        print("x_train_aug generated, shape: {}".format(x_train.shape))
         y_train = np.array(y_augment_list)
-        print("y_train_aug generated, shape: {}".format(y_train.shape))
+        print(f"x_train_aug.shape: {x_train.shape}, y_train_aug.shape: {y_train.shape}")
         train_aug_size = x_train.shape[0]
 
         print("Shuffling x_train_aug and y_train_aug")
@@ -160,6 +158,11 @@ def data_preprocess(raw_data_path, data_path, augment=False):
         x_train = x[:train_num]
         y_train = y[:train_num]
 
+    # 计算训练集的均值和标准差
+    print("Calculating x_train's mean and std")
+    mean = np.mean(x_train)
+    std = np.std(x_train)
+
     print("Saving data")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
     np.savez(
@@ -168,6 +171,8 @@ def data_preprocess(raw_data_path, data_path, augment=False):
         y_train=y_train,
         x_valid=x_valid,
         y_valid=y_valid,
+        mean=mean,
+        std=std,
     )
 
 
@@ -178,11 +183,14 @@ if __name__ == "__main__":
 
     seed_everything(42)
 
-    # data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
+    # data_preprocess("./data/raw", "./data/data.npz", augment=False)
+    data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
 
-    # item_path = os.path.join("./data/raw", "1")
-    # bmp_path = os.path.join(item_path, "2.bmp")
-    # img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+    item_path = os.path.join("./data/raw", "1")
+    bmp_path = os.path.join(item_path, "1.bmp")
+    img: np.ndarray = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+    print(img.shape)
+    print(img.dtype)
     # cv2.imshow("img", img)
     # cv2.waitKey(0)  # wait for any key
     # cv2.imshow("rotated_img", random_rotate(img, 90))
@@ -190,16 +198,24 @@ if __name__ == "__main__":
     # cv2.imshow("noisy_img", add_noise(img))
     # cv2.waitKey(0)  # wait for any key
 
-    data_npz = np.load("./data/data.npz")
-    print(data_npz["x_train"].shape)
-    print(data_npz["y_train"].shape)
-    print(data_npz["x_valid"].shape)
-    print(data_npz["y_valid"].shape)
+    # data_npz = np.load("./data/data.npz")
+    # print(data_npz["x_train"].dtype)
+    # print(data_npz["x_valid"].dtype)
+    # print(data_npz["x_train"].shape)
+    # print(data_npz["y_train"].shape)
+    # print(data_npz["x_valid"].shape)
+    # print(data_npz["y_valid"].shape)
+    # print(data_npz["mean"])
+    # print(data_npz["std"])
 
     data_aug0_npz = np.load("./data/data_aug0.npz")
+    print(data_aug0_npz["x_train"].dtype)
+    print(data_aug0_npz["x_valid"].dtype)
     print(data_aug0_npz["x_train"].shape)
     print(data_aug0_npz["y_train"].shape)
     print(data_aug0_npz["x_valid"].shape)
     print(data_aug0_npz["y_valid"].shape)
+    print(data_aug0_npz["mean"])
+    print(data_aug0_npz["std"])
 
     exit(0)
