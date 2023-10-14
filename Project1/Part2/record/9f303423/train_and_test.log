@@ -1,0 +1,129 @@
+2023-10-14 15:37:51,948 P54844 INFO Dump args: {
+    "model": "ResNet",
+    "epoches": 100,
+    "batch_size": 32,
+    "learning_rate": 0.002,
+    "record_path": "./record",
+    "save_path": "./save\\ResNet_best.ckpt",
+    "raw_data_path": "./data/raw",
+    "data_path": "./data/data.npz",
+    "random_seed": 42,
+    "mode": "train_and_test",
+    "hash_id": "9f303423"
+}
+2023-10-14 15:37:57,225 P54844 INFO Train epoch 1/100, learning rate: 0.002, train loss: 0.453030, train_acc: 0.891129 [3.81s]
+2023-10-14 15:37:57,328 P54844 INFO Best validation accuracy has been updated: 0.000000 -> 0.958333
+2023-10-14 15:37:57,342 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:37:59,868 P54844 INFO Train epoch 2/100, learning rate: 0.002, train loss: 2.355043, train_acc: 0.182049 [2.52s]
+2023-10-14 15:38:02,621 P54844 INFO Train epoch 3/100, learning rate: 0.002, train loss: 1.252932, train_acc: 0.555854 [2.64s]
+2023-10-14 15:38:05,360 P54844 INFO Train epoch 4/100, learning rate: 0.002, train loss: 0.382474, train_acc: 0.879331 [2.63s]
+2023-10-14 15:38:08,105 P54844 INFO Train epoch 5/100, learning rate: 0.002, train loss: 0.170068, train_acc: 0.947581 [2.63s]
+2023-10-14 15:38:08,216 P54844 INFO Best validation accuracy has been updated: 0.958333 -> 0.970430
+2023-10-14 15:38:08,228 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:38:10,870 P54844 INFO Train epoch 6/100, learning rate: 0.002, train loss: 0.092278, train_acc: 0.972521 [2.64s]
+2023-10-14 15:38:10,988 P54844 INFO Best validation accuracy has been updated: 0.970430 -> 0.975806
+2023-10-14 15:38:10,999 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:38:13,643 P54844 INFO Train epoch 7/100, learning rate: 0.002, train loss: 0.067732, train_acc: 0.980436 [2.64s]
+2023-10-14 15:38:16,429 P54844 INFO Train epoch 8/100, learning rate: 0.002, train loss: 0.047462, train_acc: 0.986260 [2.67s]
+2023-10-14 15:38:16,541 P54844 INFO Best validation accuracy has been updated: 0.975806 -> 0.993280
+2023-10-14 15:38:16,553 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:38:19,198 P54844 INFO Train epoch 9/100, learning rate: 0.002, train loss: 0.046515, train_acc: 0.985066 [2.64s]
+2023-10-14 15:38:21,952 P54844 INFO Train epoch 10/100, learning rate: 0.002, train loss: 0.029976, train_acc: 0.990741 [2.64s]
+2023-10-14 15:38:24,801 P54844 INFO Train epoch 11/100, learning rate: 0.002, train loss: 0.024964, train_acc: 0.993429 [2.74s]
+2023-10-14 15:38:27,611 P54844 INFO Train epoch 12/100, learning rate: 0.002, train loss: 0.020113, train_acc: 0.993280 [2.70s]
+2023-10-14 15:38:30,306 P54844 INFO Train epoch 13/100, learning rate: 0.002, train loss: 0.032500, train_acc: 0.991189 [2.59s]
+2023-10-14 15:38:33,000 P54844 INFO Train epoch 14/100, learning rate: 0.002, train loss: 0.012201, train_acc: 0.997312 [2.59s]
+2023-10-14 15:38:33,105 P54844 INFO Best validation accuracy has been updated: 0.993280 -> 0.995968
+2023-10-14 15:38:33,117 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:38:35,708 P54844 INFO Train epoch 15/100, learning rate: 0.002, train loss: 0.012365, train_acc: 0.996416 [2.59s]
+2023-10-14 15:38:38,409 P54844 INFO Train epoch 16/100, learning rate: 0.002, train loss: 0.026617, train_acc: 0.992085 [2.59s]
+2023-10-14 15:38:41,098 P54844 INFO Train epoch 17/100, learning rate: 0.002, train loss: 0.031538, train_acc: 0.991189 [2.58s]
+2023-10-14 15:38:43,789 P54844 INFO Train epoch 18/100, learning rate: 0.002, train loss: 0.006634, train_acc: 0.998059 [2.58s]
+2023-10-14 15:38:43,896 P54844 INFO Best validation accuracy has been updated: 0.995968 -> 0.997312
+2023-10-14 15:38:43,907 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:38:46,501 P54844 INFO Train epoch 19/100, learning rate: 0.002, train loss: 0.010897, train_acc: 0.997162 [2.59s]
+2023-10-14 15:38:49,199 P54844 INFO Train epoch 20/100, learning rate: 0.002, train loss: 0.003034, train_acc: 0.999552 [2.59s]
+2023-10-14 15:38:51,893 P54844 INFO Train epoch 21/100, learning rate: 0.002, train loss: 0.043018, train_acc: 0.989247 [2.58s]
+2023-10-14 15:38:54,597 P54844 INFO Train epoch 22/100, learning rate: 0.002, train loss: 0.013597, train_acc: 0.994922 [2.60s]
+2023-10-14 15:38:57,290 P54844 INFO Train epoch 23/100, learning rate: 0.002, train loss: 0.002602, train_acc: 0.998955 [2.59s]
+2023-10-14 15:38:59,985 P54844 INFO Train epoch 24/100, learning rate: 0.002, train loss: 0.022906, train_acc: 0.993280 [2.59s]
+2023-10-14 15:39:02,683 P54844 INFO Train epoch 25/100, learning rate: 0.002, train loss: 0.015731, train_acc: 0.995968 [2.59s]
+2023-10-14 15:39:05,481 P54844 INFO Train epoch 26/100, learning rate: 0.002, train loss: 0.002128, train_acc: 0.999552 [2.69s]
+2023-10-14 15:39:08,235 P54844 INFO Train epoch 27/100, learning rate: 0.002, train loss: 0.002855, train_acc: 0.999701 [2.64s]
+2023-10-14 15:39:08,347 P54844 INFO Best validation accuracy has been updated: 0.997312 -> 0.998656
+2023-10-14 15:39:08,360 P54844 INFO Save model to ./save\ResNet_best.ckpt
+2023-10-14 15:39:11,026 P54844 INFO Train epoch 28/100, learning rate: 0.002, train loss: 0.000801, train_acc: 0.999851 [2.67s]
+2023-10-14 15:39:13,777 P54844 INFO Train epoch 29/100, learning rate: 0.002, train loss: 0.000820, train_acc: 0.999851 [2.64s]
+2023-10-14 15:39:16,547 P54844 INFO Train epoch 30/100, learning rate: 0.002, train loss: 0.000493, train_acc: 0.999851 [2.66s]
+2023-10-14 15:39:19,301 P54844 INFO Train epoch 31/100, learning rate: 0.002, train loss: 0.000928, train_acc: 0.999851 [2.64s]
+2023-10-14 15:39:22,059 P54844 INFO Train epoch 32/100, learning rate: 0.002, train loss: 0.000791, train_acc: 0.999701 [2.65s]
+2023-10-14 15:39:24,831 P54844 INFO Train epoch 33/100, learning rate: 0.002, train loss: 0.000447, train_acc: 0.999701 [2.66s]
+2023-10-14 15:39:27,601 P54844 INFO Train epoch 34/100, learning rate: 0.002, train loss: 0.000649, train_acc: 0.999851 [2.66s]
+2023-10-14 15:39:30,361 P54844 INFO Train epoch 35/100, learning rate: 0.002, train loss: 0.085887, train_acc: 0.978196 [2.65s]
+2023-10-14 15:39:33,118 P54844 INFO Train epoch 36/100, learning rate: 0.002, train loss: 0.015315, train_acc: 0.995968 [2.64s]
+2023-10-14 15:39:35,870 P54844 INFO Train epoch 37/100, learning rate: 0.002, train loss: 0.006076, train_acc: 0.998208 [2.64s]
+2023-10-14 15:39:38,620 P54844 INFO Train epoch 38/100, learning rate: 0.002, train loss: 0.001632, train_acc: 0.999253 [2.64s]
+2023-10-14 15:39:41,376 P54844 INFO Train epoch 39/100, learning rate: 0.002, train loss: 0.011192, train_acc: 0.996714 [2.64s]
+2023-10-14 15:39:44,127 P54844 INFO Train epoch 40/100, learning rate: 0.002, train loss: 0.006314, train_acc: 0.997461 [2.64s]
+2023-10-14 15:39:46,883 P54844 INFO Train epoch 41/100, learning rate: 0.002, train loss: 0.011969, train_acc: 0.996416 [2.64s]
+2023-10-14 15:39:49,650 P54844 INFO Train epoch 42/100, learning rate: 0.002, train loss: 0.016043, train_acc: 0.994922 [2.65s]
+2023-10-14 15:39:52,405 P54844 INFO Train epoch 43/100, learning rate: 0.002, train loss: 0.005061, train_acc: 0.998656 [2.64s]
+2023-10-14 15:39:55,153 P54844 INFO Train epoch 44/100, learning rate: 0.002, train loss: 0.003607, train_acc: 0.999104 [2.64s]
+2023-10-14 15:39:57,909 P54844 INFO Train epoch 45/100, learning rate: 0.002, train loss: 0.012137, train_acc: 0.996416 [2.64s]
+2023-10-14 15:40:00,671 P54844 INFO Train epoch 46/100, learning rate: 0.002, train loss: 0.004326, train_acc: 0.998805 [2.64s]
+2023-10-14 15:40:03,417 P54844 INFO Train epoch 47/100, learning rate: 0.002, train loss: 0.005281, train_acc: 0.998507 [2.63s]
+2023-10-14 15:40:06,173 P54844 INFO Train epoch 48/100, learning rate: 0.002, train loss: 0.004443, train_acc: 0.998805 [2.65s]
+2023-10-14 15:40:08,925 P54844 INFO Train epoch 49/100, learning rate: 0.002, train loss: 0.017714, train_acc: 0.994922 [2.64s]
+2023-10-14 15:40:11,681 P54844 INFO Train epoch 50/100, learning rate: 0.002, train loss: 0.023784, train_acc: 0.993130 [2.65s]
+2023-10-14 15:40:14,439 P54844 INFO Train epoch 51/100, learning rate: 0.002, train loss: 0.002558, train_acc: 0.998805 [2.65s]
+2023-10-14 15:40:17,190 P54844 INFO Train epoch 52/100, learning rate: 0.002, train loss: 0.001793, train_acc: 0.999552 [2.64s]
+2023-10-14 15:40:19,940 P54844 INFO Train epoch 53/100, learning rate: 0.002, train loss: 0.000770, train_acc: 0.999701 [2.64s]
+2023-10-14 15:40:22,712 P54844 INFO Train epoch 54/100, learning rate: 0.002, train loss: 0.000583, train_acc: 0.999701 [2.66s]
+2023-10-14 15:40:25,476 P54844 INFO Train epoch 55/100, learning rate: 0.002, train loss: 0.000423, train_acc: 0.999701 [2.65s]
+2023-10-14 15:40:28,230 P54844 INFO Train epoch 56/100, learning rate: 0.002, train loss: 0.000356, train_acc: 0.999851 [2.64s]
+2023-10-14 15:40:30,987 P54844 INFO Train epoch 57/100, learning rate: 0.002, train loss: 0.000336, train_acc: 0.999851 [2.65s]
+2023-10-14 15:40:33,731 P54844 INFO Train epoch 58/100, learning rate: 0.002, train loss: 0.000355, train_acc: 0.999851 [2.63s]
+2023-10-14 15:40:36,480 P54844 INFO Train epoch 59/100, learning rate: 0.002, train loss: 0.000327, train_acc: 0.999701 [2.64s]
+2023-10-14 15:40:39,247 P54844 INFO Train epoch 60/100, learning rate: 0.002, train loss: 0.000322, train_acc: 0.999851 [2.65s]
+2023-10-14 15:40:41,991 P54844 INFO Train epoch 61/100, learning rate: 0.002, train loss: 0.000344, train_acc: 0.999701 [2.63s]
+2023-10-14 15:40:44,738 P54844 INFO Train epoch 62/100, learning rate: 0.002, train loss: 0.000329, train_acc: 0.999701 [2.64s]
+2023-10-14 15:40:47,496 P54844 INFO Train epoch 63/100, learning rate: 0.002, train loss: 0.000325, train_acc: 0.999851 [2.64s]
+2023-10-14 15:40:50,248 P54844 INFO Train epoch 64/100, learning rate: 0.002, train loss: 0.000304, train_acc: 0.999851 [2.64s]
+2023-10-14 15:40:52,992 P54844 INFO Train epoch 65/100, learning rate: 0.002, train loss: 0.000336, train_acc: 0.999701 [2.64s]
+2023-10-14 15:40:55,745 P54844 INFO Train epoch 66/100, learning rate: 0.002, train loss: 0.000345, train_acc: 0.999701 [2.64s]
+2023-10-14 15:40:58,499 P54844 INFO Train epoch 67/100, learning rate: 0.002, train loss: 0.000251, train_acc: 0.999851 [2.64s]
+2023-10-14 15:41:01,254 P54844 INFO Train epoch 68/100, learning rate: 0.002, train loss: 0.000353, train_acc: 0.999851 [2.64s]
+2023-10-14 15:41:04,006 P54844 INFO Train epoch 69/100, learning rate: 0.002, train loss: 0.000387, train_acc: 0.999701 [2.64s]
+2023-10-14 15:41:06,755 P54844 INFO Train epoch 70/100, learning rate: 0.002, train loss: 0.066258, train_acc: 0.981780 [2.64s]
+2023-10-14 15:41:09,512 P54844 INFO Train epoch 71/100, learning rate: 0.002, train loss: 0.014979, train_acc: 0.995669 [2.65s]
+2023-10-14 15:41:12,272 P54844 INFO Train epoch 72/100, learning rate: 0.002, train loss: 0.008500, train_acc: 0.996864 [2.65s]
+2023-10-14 15:41:15,020 P54844 INFO Train epoch 73/100, learning rate: 0.002, train loss: 0.001351, train_acc: 0.999552 [2.64s]
+2023-10-14 15:41:17,770 P54844 INFO Train epoch 74/100, learning rate: 0.002, train loss: 0.002637, train_acc: 0.999552 [2.64s]
+2023-10-14 15:41:20,525 P54844 INFO Train epoch 75/100, learning rate: 0.002, train loss: 0.000437, train_acc: 0.999701 [2.65s]
+2023-10-14 15:41:23,271 P54844 INFO Train epoch 76/100, learning rate: 0.002, train loss: 0.000402, train_acc: 0.999701 [2.64s]
+2023-10-14 15:41:26,043 P54844 INFO Train epoch 77/100, learning rate: 0.002, train loss: 0.000349, train_acc: 0.999851 [2.66s]
+2023-10-14 15:41:28,861 P54844 INFO Train epoch 78/100, learning rate: 0.002, train loss: 0.000278, train_acc: 0.999851 [2.71s]
+2023-10-14 15:41:31,616 P54844 INFO Train epoch 79/100, learning rate: 0.002, train loss: 0.000314, train_acc: 0.999701 [2.64s]
+2023-10-14 15:41:34,352 P54844 INFO Train epoch 80/100, learning rate: 0.002, train loss: 0.000326, train_acc: 0.999851 [2.62s]
+2023-10-14 15:41:37,085 P54844 INFO Train epoch 81/100, learning rate: 0.002, train loss: 0.000339, train_acc: 0.999851 [2.62s]
+2023-10-14 15:41:39,814 P54844 INFO Train epoch 82/100, learning rate: 0.002, train loss: 0.000348, train_acc: 0.999701 [2.62s]
+2023-10-14 15:41:42,540 P54844 INFO Train epoch 83/100, learning rate: 0.002, train loss: 0.000351, train_acc: 0.999851 [2.62s]
+2023-10-14 15:41:45,263 P54844 INFO Train epoch 84/100, learning rate: 0.002, train loss: 0.000953, train_acc: 0.999701 [2.61s]
+2023-10-14 15:41:47,990 P54844 INFO Train epoch 85/100, learning rate: 0.002, train loss: 0.000883, train_acc: 0.999851 [2.62s]
+2023-10-14 15:41:50,764 P54844 INFO Train epoch 86/100, learning rate: 0.002, train loss: 0.000627, train_acc: 0.999701 [2.66s]
+2023-10-14 15:41:53,510 P54844 INFO Train epoch 87/100, learning rate: 0.002, train loss: 0.000423, train_acc: 0.999851 [2.62s]
+2023-10-14 15:41:56,278 P54844 INFO Train epoch 88/100, learning rate: 0.002, train loss: 0.000345, train_acc: 0.999701 [2.66s]
+2023-10-14 15:41:59,071 P54844 INFO Train epoch 89/100, learning rate: 0.002, train loss: 0.000284, train_acc: 0.999851 [2.68s]
+2023-10-14 15:42:01,923 P54844 INFO Train epoch 90/100, learning rate: 0.002, train loss: 0.000305, train_acc: 0.999851 [2.74s]
+2023-10-14 15:42:04,670 P54844 INFO Train epoch 91/100, learning rate: 0.002, train loss: 0.000298, train_acc: 0.999851 [2.64s]
+2023-10-14 15:42:07,433 P54844 INFO Train epoch 92/100, learning rate: 0.002, train loss: 0.000521, train_acc: 0.999851 [2.65s]
+2023-10-14 15:42:10,217 P54844 INFO Train epoch 93/100, learning rate: 0.002, train loss: 0.072928, train_acc: 0.980436 [2.67s]
+2023-10-14 15:42:12,979 P54844 INFO Train epoch 94/100, learning rate: 0.002, train loss: 0.006956, train_acc: 0.997312 [2.65s]
+2023-10-14 15:42:15,712 P54844 INFO Train epoch 95/100, learning rate: 0.002, train loss: 0.010581, train_acc: 0.997461 [2.63s]
+2023-10-14 15:42:18,488 P54844 INFO Train epoch 96/100, learning rate: 0.002, train loss: 0.003184, train_acc: 0.999104 [2.67s]
+2023-10-14 15:42:21,272 P54844 INFO Train epoch 97/100, learning rate: 0.002, train loss: 0.001028, train_acc: 0.999851 [2.66s]
+2023-10-14 15:42:24,052 P54844 INFO Train epoch 98/100, learning rate: 0.002, train loss: 0.000343, train_acc: 0.999851 [2.66s]
+2023-10-14 15:42:26,835 P54844 INFO Train epoch 99/100, learning rate: 0.002, train loss: 0.000323, train_acc: 0.999851 [2.67s]
+2023-10-14 15:42:29,624 P54844 INFO Train epoch 100/100, learning rate: 0.002, train loss: 0.000282, train_acc: 0.999701 [2.67s]
+2023-10-14 15:42:29,753 P54844 INFO Load model from ./save\ResNet_best.ckpt
+2023-10-14 15:42:29,757 P54844 INFO best pretrain: {'valid_loss': 0.004699581247753788, 'valid_acc': tensor(0.9987, device='cuda:0'), 'train_loss': 0.0028546657313023886, 'train_acc': tensor(0.9997, device='cuda:0')}
