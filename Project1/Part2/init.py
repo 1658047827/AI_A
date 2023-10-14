@@ -179,6 +179,37 @@ def data_preprocess(raw_data_path, data_path, augment=False):
     )
 
 
+def test_preprocess(raw_data_path, data_path, shuffle=True):
+    x_list = []
+    y_list = []
+    for item in os.listdir(raw_data_path):
+        index = int(item) - 1  # 汉字的分类索引
+        item_path = os.path.join(raw_data_path, item)
+        for bmp in os.listdir(item_path):
+            bmp_path = os.path.join(item_path, bmp)
+            img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+            flatten_img = img.flatten()
+            x_list.append(flatten_img)
+            y_list.append(index)
+
+    x = np.vstack(x_list)
+    print("x generated, shape: {}".format(x.shape))
+    y = np.array(y_list)
+    print("y generated, shape: {}".format(y.shape))
+    num_samples = x.shape[0]
+
+    if shuffle:
+        print("Shuffling x and y")
+        random_indices = np.arange(num_samples)
+        np.random.shuffle(random_indices)
+        x = x[random_indices]
+        y = y[random_indices]
+
+    print("Saving data")
+    os.makedirs(os.path.dirname(data_path), exist_ok=True)
+    np.savez(data_path, x_test=x, y_test=y)
+
+
 if __name__ == "__main__":
     current_file_path = os.path.abspath(__file__)
     current_directory = os.path.dirname(current_file_path)

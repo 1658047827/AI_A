@@ -18,7 +18,7 @@ def set_device(gpu=-1):
 
 class CNNClassifier:
     def __init__(self, model, gpu):
-        self.model: torch.nn.Module = model
+        self.model: nn.Module = model
         self.best = {
             "train_loss": float("inf"),
             "valid_loss": float("inf"),
