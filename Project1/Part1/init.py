@@ -118,7 +118,7 @@ def data_preprocess(raw_data_path, data_path, shuffle=True):
             bmp_path = os.path.join(item_path, bmp)
             img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
 
-            # TODO: 数据增强 & 进行数据的归一化
+            # TODO: 数据增强
             
             flatten_img = img.flatten()
             x_list.append(flatten_img)
