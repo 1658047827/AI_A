@@ -1,8 +1,4 @@
-# Part 1.
-
-TODO: 
-
-+ 训练图片做标准化、归一化
+# Part 1.	
 
 ## Section 1. 代码基本架构
 
@@ -498,9 +494,61 @@ $$
 $$
 这样就得出了损失关于 `CrossEntropyLoss` 输入的偏导数了。
 
-## Section 3. 
+## Section 3. 神经网络训练
 
+拟合 $\sin$ 和汉字分类上，我都将数据集按照 `train:valid = 9:1` 的比例划分训练集和验证集进行训练。由于拟合 $\sin$ 的过程比较简单，而且其训练集数据比较丰富，所以下面的内容都是针对汉字分类的训练过程。
 
+汉字分类在模型结构上使用了 `Linear` 和 `ReLU` 进行搭建，具体网络结构按照如下顺序连接：
+
+1. `Linear(28 * 28, 1024)`
+2. `ReLU()`
+3. `Linear(1024, 2048)`
+4. `ReLU()`
+5. `Linear(2048, 512)`
+6. `ReLU()`
+7. `Linear(512, 12)`
+
+最后没有经过 `Softmax` 是因为损失函数模块 `CrossEntropyLoss` 中已经包含了 `softmax` 计算了。
+
+经过多次尝试后，确定使用如下训练参数进行训练，同时不使用 scheduler 进行学习率调整。
+
+```json
+{
+    "batch_size": 32,
+    "data_path": "./data/char/data.npz",
+    "epoches": 80,
+    "hash_id": "7cb67d02",
+    "learning_rate": 0.03,
+    "mode": "train_and_test",
+    "random_seed": 42,
+    "raw_data_path": "./data/char/train_raw",
+    "record_path": "./record/char",
+    "save_path": "./save/char/best_model.pkl"
+}
+```
+
+注意对于灰度图片，其像素值在 $[0, 255]$ ，这里我在 `CharDataset` 初始化时传入一个 `transform` 将其归一化到 $[0, 1]$ 范围，而且经过多次比较发现，归一化后的训练效果往往更好。使用上述参数训练后，模型在验证集上的正确率达到了 92.3% 。
+
+基于上面的预训练，我接着使用如下参数进行训练，同样不使用 scheduler 调整学习率。
+
+```json
+{
+    "batch_size": 16,
+    "data_path": "./data/char/data.npz",
+    "epoches": 80,
+    "hash_id": "3981de82",
+    "learning_rate": 0.03,
+    "mode": "train_and_test",
+    "random_seed": 42,
+    "raw_data_path": "./data/char/train_raw",
+    "record_path": "./record/char",
+    "save_path": "./save/char/best_model.pkl"
+}
+```
+
+与上一次训练参数的主要差别就是减小了 `batch_size` ，减小了 `batch_size` 后模型权重的更新频率更高，通常也能引入更多的随机性。使用上述参数训练后，模型在验证集上的正确率达到了 92.95% 。
+
+最后我调小了学习率，调大了 `batch_size` 希望让模型更稳定地学习，但是最终在验证集上地正确率没有提高。个人认为一方面数据集数据量比较小，另一方面受限于简单线性层的性质，难以像 CNN 那样学习多种层次特征。故若想进一步提升正确率，我认为可以对数据进行增强（添加新数据、旋转图片、图片添加噪声等）
 
 ## 参考资料
 

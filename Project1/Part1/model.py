@@ -29,7 +29,7 @@ class ANN(Module):
         self.module_list = []
         for i in range(len(layer_sizes) - 2):
             self.module_list.append(Linear(layer_sizes[i], layer_sizes[i + 1]))
-            # 若用 ReLU 激活，学习率得调小，不然容易出现神经元死亡
+            # 若用 ReLU 激活，需要小心神经元死亡
             self.module_list.append(ReLU())
         self.module_list.append(Linear(layer_sizes[-2], layer_sizes[-1]))
 
@@ -157,7 +157,6 @@ class MLPClassifier:
         self, train_loader, valid_loader, epoches, learning_rate, save_path, **kwargs
     ):
         optimizer = Optimizer(self.model, learning_rate)
-        # scheduler = StepLR(optimizer, 1000, 0.5)
         loss_fn = CrossEntropyLoss()
         metric = accuracy
         log_interval = kwargs.get("log_interval", 10)
@@ -208,7 +207,6 @@ class MLPClassifier:
                 if save_path is not None:
                     self.save_model(save_path)
 
-            # scheduler.step()
         if save_path is not None:
             self.load_model(save_path)
 
