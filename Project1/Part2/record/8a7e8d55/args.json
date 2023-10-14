@@ -1,0 +1,13 @@
+{
+    "batch_size": 32,
+    "data_path": "./data/data.npz",
+    "epoches": 100,
+    "hash_id": "8a7e8d55",
+    "learning_rate": 0.003,
+    "mode": "train_and_test",
+    "model": "LeNet",
+    "random_seed": 42,
+    "raw_data_path": "./data/raw",
+    "record_path": "./record",
+    "save_path": "./save\\LeNet_best.ckpt"
+}
