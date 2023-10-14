@@ -1,0 +1,110 @@
+2023-10-14 11:36:37,218 P8884 INFO Dump args: {
+    "epoches": 80,
+    "batch_size": 64,
+    "learning_rate": 0.009,
+    "record_path": "./record/char",
+    "save_path": "./save/char/best_model.pkl",
+    "raw_data_path": "./data/char/train_raw",
+    "data_path": "./data/char/data.npz",
+    "random_seed": 42,
+    "mode": "train_and_test",
+    "hash_id": "060722b8"
+}
+2023-10-14 11:36:43,350 P8884 INFO Load model from ./save/char/best_model.pkl
+2023-10-14 11:36:53,553 P8884 INFO valid_acc: 0.927865, valid_loss: 0.395599
+2023-10-14 11:36:59,054 P8884 INFO valid_acc: 0.929167, valid_loss: 0.397394
+2023-10-14 11:37:04,590 P8884 INFO valid_acc: 0.927865, valid_loss: 0.398965
+2023-10-14 11:37:10,071 P8884 INFO valid_acc: 0.927865, valid_loss: 0.399608
+2023-10-14 11:37:15,407 P8884 INFO Train epoch 5/80, learning rate: 0.009, train loss: 0.001327, train_acc: 0.999851 [5.33s]
+2023-10-14 11:37:15,522 P8884 INFO valid_acc: 0.927865, valid_loss: 0.402672
+2023-10-14 11:37:20,990 P8884 INFO valid_acc: 0.926563, valid_loss: 0.403428
+2023-10-14 11:37:26,429 P8884 INFO valid_acc: 0.925260, valid_loss: 0.405340
+2023-10-14 11:37:31,903 P8884 INFO valid_acc: 0.926563, valid_loss: 0.406002
+2023-10-14 11:37:37,565 P8884 INFO valid_acc: 0.926563, valid_loss: 0.407169
+2023-10-14 11:37:43,453 P8884 INFO Train epoch 10/80, learning rate: 0.009, train loss: 0.001258, train_acc: 0.999702 [5.89s]
+2023-10-14 11:37:43,545 P8884 INFO valid_acc: 0.926563, valid_loss: 0.407702
+2023-10-14 11:37:48,883 P8884 INFO valid_acc: 0.926563, valid_loss: 0.408693
+2023-10-14 11:37:54,695 P8884 INFO valid_acc: 0.926563, valid_loss: 0.406761
+2023-10-14 11:38:00,096 P8884 INFO valid_acc: 0.927865, valid_loss: 0.409494
+2023-10-14 11:38:05,664 P8884 INFO valid_acc: 0.927865, valid_loss: 0.410957
+2023-10-14 11:38:11,012 P8884 INFO Train epoch 15/80, learning rate: 0.009, train loss: 0.001192, train_acc: 0.999702 [5.35s]
+2023-10-14 11:38:11,128 P8884 INFO valid_acc: 0.926563, valid_loss: 0.411395
+2023-10-14 11:38:16,578 P8884 INFO valid_acc: 0.926563, valid_loss: 0.409572
+2023-10-14 11:38:21,936 P8884 INFO valid_acc: 0.926563, valid_loss: 0.411764
+2023-10-14 11:38:27,287 P8884 INFO valid_acc: 0.926563, valid_loss: 0.410703
+2023-10-14 11:38:32,747 P8884 INFO valid_acc: 0.926563, valid_loss: 0.413104
+2023-10-14 11:38:38,100 P8884 INFO Train epoch 20/80, learning rate: 0.009, train loss: 0.001117, train_acc: 0.999702 [5.35s]
+2023-10-14 11:38:38,218 P8884 INFO valid_acc: 0.927865, valid_loss: 0.414189
+2023-10-14 11:38:43,788 P8884 INFO valid_acc: 0.926563, valid_loss: 0.414646
+2023-10-14 11:38:49,192 P8884 INFO valid_acc: 0.926563, valid_loss: 0.413528
+2023-10-14 11:38:54,568 P8884 INFO valid_acc: 0.927865, valid_loss: 0.415168
+2023-10-14 11:39:00,027 P8884 INFO valid_acc: 0.926563, valid_loss: 0.413563
+2023-10-14 11:39:05,323 P8884 INFO Train epoch 25/80, learning rate: 0.009, train loss: 0.001072, train_acc: 0.999851 [5.30s]
+2023-10-14 11:39:05,438 P8884 INFO valid_acc: 0.926563, valid_loss: 0.415589
+2023-10-14 11:39:10,922 P8884 INFO valid_acc: 0.926563, valid_loss: 0.414330
+2023-10-14 11:39:16,302 P8884 INFO valid_acc: 0.926563, valid_loss: 0.414908
+2023-10-14 11:39:21,743 P8884 INFO valid_acc: 0.926563, valid_loss: 0.414906
+2023-10-14 11:39:27,063 P8884 INFO valid_acc: 0.926563, valid_loss: 0.417446
+2023-10-14 11:39:32,371 P8884 INFO Train epoch 30/80, learning rate: 0.009, train loss: 0.001043, train_acc: 0.999702 [5.31s]
+2023-10-14 11:39:32,492 P8884 INFO valid_acc: 0.927865, valid_loss: 0.418315
+2023-10-14 11:39:38,075 P8884 INFO valid_acc: 0.926563, valid_loss: 0.418995
+2023-10-14 11:39:43,732 P8884 INFO valid_acc: 0.926563, valid_loss: 0.419630
+2023-10-14 11:39:49,496 P8884 INFO valid_acc: 0.926563, valid_loss: 0.418200
+2023-10-14 11:39:55,112 P8884 INFO valid_acc: 0.926563, valid_loss: 0.419802
+2023-10-14 11:40:00,718 P8884 INFO Train epoch 35/80, learning rate: 0.009, train loss: 0.001007, train_acc: 0.999851 [5.60s]
+2023-10-14 11:40:00,829 P8884 INFO valid_acc: 0.926563, valid_loss: 0.418952
+2023-10-14 11:40:06,433 P8884 INFO valid_acc: 0.927865, valid_loss: 0.420867
+2023-10-14 11:40:12,056 P8884 INFO valid_acc: 0.926563, valid_loss: 0.421488
+2023-10-14 11:40:17,719 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422515
+2023-10-14 11:40:23,444 P8884 INFO valid_acc: 0.926563, valid_loss: 0.420717
+2023-10-14 11:40:29,132 P8884 INFO Train epoch 40/80, learning rate: 0.009, train loss: 0.000970, train_acc: 0.999851 [5.69s]
+2023-10-14 11:40:29,287 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422700
+2023-10-14 11:40:35,338 P8884 INFO valid_acc: 0.925260, valid_loss: 0.422298
+2023-10-14 11:40:41,824 P8884 INFO valid_acc: 0.927865, valid_loss: 0.423534
+2023-10-14 11:40:47,517 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422149
+2023-10-14 11:40:53,154 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422171
+2023-10-14 11:40:58,525 P8884 INFO Train epoch 45/80, learning rate: 0.009, train loss: 0.000974, train_acc: 0.999702 [5.37s]
+2023-10-14 11:40:58,629 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422703
+2023-10-14 11:41:04,089 P8884 INFO valid_acc: 0.926563, valid_loss: 0.422865
+2023-10-14 11:41:09,510 P8884 INFO valid_acc: 0.926563, valid_loss: 0.423417
+2023-10-14 11:41:14,983 P8884 INFO valid_acc: 0.926563, valid_loss: 0.423882
+2023-10-14 11:41:20,383 P8884 INFO valid_acc: 0.926563, valid_loss: 0.424559
+2023-10-14 11:41:25,816 P8884 INFO Train epoch 50/80, learning rate: 0.009, train loss: 0.000956, train_acc: 0.999702 [5.43s]
+2023-10-14 11:41:25,925 P8884 INFO valid_acc: 0.926563, valid_loss: 0.424579
+2023-10-14 11:41:31,418 P8884 INFO valid_acc: 0.926563, valid_loss: 0.424648
+2023-10-14 11:41:36,783 P8884 INFO valid_acc: 0.926563, valid_loss: 0.425342
+2023-10-14 11:41:42,236 P8884 INFO valid_acc: 0.926563, valid_loss: 0.425740
+2023-10-14 11:41:47,659 P8884 INFO valid_acc: 0.926563, valid_loss: 0.428174
+2023-10-14 11:41:52,951 P8884 INFO Train epoch 55/80, learning rate: 0.009, train loss: 0.000921, train_acc: 0.999702 [5.29s]
+2023-10-14 11:41:53,059 P8884 INFO valid_acc: 0.926563, valid_loss: 0.429078
+2023-10-14 11:41:58,556 P8884 INFO valid_acc: 0.926563, valid_loss: 0.429255
+2023-10-14 11:42:03,982 P8884 INFO valid_acc: 0.926563, valid_loss: 0.427435
+2023-10-14 11:42:09,488 P8884 INFO valid_acc: 0.927865, valid_loss: 0.429288
+2023-10-14 11:42:14,849 P8884 INFO valid_acc: 0.926563, valid_loss: 0.427951
+2023-10-14 11:42:20,126 P8884 INFO Train epoch 60/80, learning rate: 0.009, train loss: 0.000901, train_acc: 0.999702 [5.28s]
+2023-10-14 11:42:20,236 P8884 INFO valid_acc: 0.926563, valid_loss: 0.428090
+2023-10-14 11:42:25,686 P8884 INFO valid_acc: 0.926563, valid_loss: 0.430156
+2023-10-14 11:42:31,014 P8884 INFO valid_acc: 0.926563, valid_loss: 0.430758
+2023-10-14 11:42:36,386 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431045
+2023-10-14 11:42:41,787 P8884 INFO valid_acc: 0.926563, valid_loss: 0.429279
+2023-10-14 11:42:47,111 P8884 INFO Train epoch 65/80, learning rate: 0.009, train loss: 0.000863, train_acc: 0.999851 [5.32s]
+2023-10-14 11:42:47,218 P8884 INFO valid_acc: 0.927865, valid_loss: 0.431434
+2023-10-14 11:42:52,601 P8884 INFO valid_acc: 0.926563, valid_loss: 0.429774
+2023-10-14 11:42:58,121 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431520
+2023-10-14 11:43:03,611 P8884 INFO valid_acc: 0.926563, valid_loss: 0.432392
+2023-10-14 11:43:08,987 P8884 INFO valid_acc: 0.927865, valid_loss: 0.432488
+2023-10-14 11:43:14,272 P8884 INFO Train epoch 70/80, learning rate: 0.009, train loss: 0.000884, train_acc: 0.999702 [5.28s]
+2023-10-14 11:43:14,380 P8884 INFO valid_acc: 0.926563, valid_loss: 0.432692
+2023-10-14 11:43:19,727 P8884 INFO valid_acc: 0.926563, valid_loss: 0.433050
+2023-10-14 11:43:25,108 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431434
+2023-10-14 11:43:30,516 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431420
+2023-10-14 11:43:35,918 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431600
+2023-10-14 11:43:41,176 P8884 INFO Train epoch 75/80, learning rate: 0.009, train loss: 0.000868, train_acc: 0.999702 [5.26s]
+2023-10-14 11:43:41,289 P8884 INFO valid_acc: 0.926563, valid_loss: 0.431904
+2023-10-14 11:43:46,760 P8884 INFO valid_acc: 0.927865, valid_loss: 0.434462
+2023-10-14 11:43:52,118 P8884 INFO valid_acc: 0.926563, valid_loss: 0.432889
+2023-10-14 11:43:57,529 P8884 INFO valid_acc: 0.927865, valid_loss: 0.435105
+2023-10-14 11:44:03,164 P8884 INFO valid_acc: 0.926563, valid_loss: 0.435224
+2023-10-14 11:44:08,440 P8884 INFO Train epoch 80/80, learning rate: 0.009, train loss: 0.000818, train_acc: 0.999851 [5.27s]
+2023-10-14 11:44:08,552 P8884 INFO valid_acc: 0.926563, valid_loss: 0.433891
+2023-10-14 11:44:08,577 P8884 INFO Load model from ./save/char/best_model.pkl

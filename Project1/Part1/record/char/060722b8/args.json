@@ -1,0 +1,12 @@
+{
+    "batch_size": 64,
+    "data_path": "./data/char/data.npz",
+    "epoches": 80,
+    "hash_id": "060722b8",
+    "learning_rate": 0.009,
+    "mode": "train_and_test",
+    "random_seed": 42,
+    "raw_data_path": "./data/char/train_raw",
+    "record_path": "./record/char",
+    "save_path": "./save/char/best_model.pkl"
+}
