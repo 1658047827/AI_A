@@ -2,6 +2,26 @@ import numpy as np
 from utils import Dataset
 
 
+class ToTensor:
+    """
+    [0, 255] -> [0.0, 1.0]
+    """
+    def __init__(self):
+        pass
+
+    def __call__(self, pic):
+        return pic / 255.0
+
+
+class Normalize:
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, pic):
+        return (pic - self.mean) / self.std
+
+
 class SinDataset(Dataset):
     def __init__(self, x, y):
         self.x = x
