@@ -234,12 +234,12 @@ $$
 \frac{\partial \mathcal{L}}{\partial z^{(l)}} \cdot
 \frac{\partial z^{(l)}}{\partial b^{(l)}}
 $$
-首先计算 $\frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}}$ ，因为 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$ ，也就是 $z_j^{(l)} = \sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}}$ ，所以：
+首先计算 $\frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}}$ ，因为 $z^{(l)}=a^{(l-1)}W^{(l)}+b^{(l)}$ ，也就是 $z_j^{(l)} = \sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}}+b^{(l)}_j$ ，所以：
 $$
 \begin{aligned}
 \frac{\partial z^{(l)}}{\partial w_{ij}^{(l)}} 
 & = \left[\frac{\partial z_1^{(l)}}{\partial w_{ij}^{(l)}},\dots,\frac{\partial z_j^{(l)}}{\partial w_{ij}^{(l)}},\dots, \frac{\partial z_{M_l}^{(l)}}{\partial w_{ij}^{(l)}} \right]^T\\
-& = \left[0,\cdots,\frac{\partial (\sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}})}{\partial w_{ij}^{(l)}},\cdots,0 \right]^T\\
+& = \left[0,\cdots,\frac{\partial (\sum_{i}{a_i^{(l-1)}\cdot w_{ij}^{(l)}}+b^{(l)}_j)}{\partial w_{ij}^{(l)}},\cdots,0 \right]^T\\
 & = [0,\cdots,a_i^{(l-1)},\cdots,0]^T\\
 \end{aligned}
 $$
