@@ -113,49 +113,6 @@ class CrossEntropyLoss(Module):
 
 对于 `labels`（也即 `target` ）是 `(batch_size)` 的一维数组时，代码中利用了 `numpy` 的高级索引—— `self.softmax_scores[np.arange(self.batch_size), labels]` 简化代码编写，提高计算效率。
 
-### MSELoss
-
-```python
-class MSELoss(Module):
-    def __init__(self):
-        super(MSELoss, self).__init__()
-        self.predicts = None
-        self.labels = None
-        self.batch_size = None
-
-    def forward(self, predicts, labels):
-        self.predicts = predicts
-        self.labels = labels
-        self.batch_size = predicts.shape[0]
-        loss = np.square((predicts - labels)) / 2
-        return np.sum(loss) / self.batch_size
-
-    def backward(self):
-        loss_grad_predicts = self.predicts - self.labels
-        return loss_grad_predicts / self.batch_size
-```
-
-比较简单的均方误差损失函数，默认计算平均损失，但是和 PyTorch 文档中的 $l_n=(x_n-y_n)^2$ 不同，这里采用课件上的 $l_n=\frac{1}{2}(x_n-y_n)^2$ 式。
-
-### Sigmoid
-
-```python
-class Sigmoid(Module):
-    def __init__(self):
-        super(Sigmoid, self).__init__()
-        self.outputs = None
-
-    def forward(self, inputs):
-        self.outputs = 1.0 / (1.0 + np.exp(-inputs))
-        return self.outputs
-
-    def backward(self, grads):
-        outputs_grad_inputs = np.multiply(self.outputs, (1.0 - self.outputs))
-        return np.multiply(grads, outputs_grad_inputs)
-```
-
-简单的 `Sigmoid` 实现，也叫做 `Logistic` 函数，作为激活层，也是二分类常用的函数。
-
 ### ReLU
 
 ```python
@@ -257,32 +214,6 @@ def default_collate(batch):
 ```
 
 `collate_fun` 把 $\text{batch\_size}$ 个形如  $(dim_0, dim_1, \cdots, dim_k)$ 的 `ndarray` sample 整理成一个形如 $(\text{batch\_size}, dim_0,\cdots,dim_k)$ 的 `ndarray` batch 。而 `Sampler` 提供对整个数据集所有样本的一个采样索引序列，每次 `BatchSampler` 从 `Sampler` 中取 $\text{batch\_size}$ 个索引，利用这些索引去 `dataset` 中取对应的 sample 。所以 `dataset` 只需要实现 `__getitem__` 和 `__len__` 方法即可。
-
-### Others
-
-在这里简单介绍一下自定义的网络结构 `ANN` ：
-
-```python
-class ANN(Module):
-    def __init__(self, layer_sizes):
-        super(ANN, self).__init__()
-        self.module_list = []
-        for i in range(len(layer_sizes) - 2):
-            self.module_list.append(Linear(layer_sizes[i], layer_sizes[i + 1]))
-            self.module_list.append(ReLU())
-        self.module_list.append(Linear(layer_sizes[-2], layer_sizes[-1]))
-
-    def forward(self, inputs):
-        for layer in self.module_list:
-            inputs = layer(inputs)
-        return inputs
-
-    def backward(self, grads):
-        for layer in reversed(self.module_list):
-            grads = layer.backward(grads)
-```
-
-结合传入的参数 `layer_sizes` ，利用之前的代码可以比较容易地搭建可调整的结构，前向传播是将前一层的输出作为下一层的输入，反向传播是将后面的梯度输入到前一层。整个结构顺序传播，主要使用类似 `nn.ModuleList` 的方式搭建。
 
 ## Section 2. 对反向传播算法的理解
 
