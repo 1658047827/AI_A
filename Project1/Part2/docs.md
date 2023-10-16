@@ -266,6 +266,26 @@ ResNet18 中最核心的地方就是残差单元。根据参考资料的描述�
 
 经过这次训练，模型最终在验证集上的正确率到达了 98.38% 。
 
+对于 ResNet18 的训练，我使用了如下的参数，其中实验后发现学习率较小时能有比较好的效果，学习率过大比较容易出现神经元死亡：
+
+```json
+{
+    "batch_size": 64,
+    "data_path": "./data/data.npz",
+    "epoches": 80,
+    "hash_id": "bb0e4dce",
+    "learning_rate": 5e-05,
+    "mode": "train",
+    "model": "ResNet18",
+    "random_seed": 42,
+    "raw_data_path": "./data/raw",
+    "record_path": "./record",
+    "save_path": "./save\\ResNet18_best.ckpt"
+}
+```
+
+经过训练后，模型最终在验证集上的正确率到达了 99.4% 。
+
 ## 参考资料
 
 + [PyTorch documentation — PyTorch 2.1 documentation](https://pytorch.org/docs/stable/index.html)
