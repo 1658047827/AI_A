@@ -1,0 +1,35 @@
+2023-10-16 14:56:11,568 P24864 INFO Dump args: {
+    "model": "ResNet18",
+    "epoches": 80,
+    "batch_size": 64,
+    "learning_rate": 5e-05,
+    "record_path": "./record",
+    "save_path": "./save\\ResNet18_best.ckpt",
+    "raw_data_path": "./data/raw",
+    "data_path": "./data/data.npz",
+    "random_seed": 42,
+    "mode": "train",
+    "hash_id": "bb0e4dce"
+}
+2023-10-16 14:57:08,176 P24864 INFO Train epoch 1/80, learning rate: 5e-05, train loss: 0.657823, train_acc: 0.828704 [49.85s]
+2023-10-16 14:57:10,196 P24864 INFO Best validation accuracy has been updated: 0.000000 -> 0.975806
+2023-10-16 14:57:10,267 P24864 INFO Save model to ./save\ResNet18_best.ckpt
+2023-10-16 14:57:56,073 P24864 INFO Train epoch 2/80, learning rate: 5e-05, train loss: 0.913564, train_acc: 0.763292 [45.80s]
+2023-10-16 14:58:43,632 P24864 INFO Train epoch 3/80, learning rate: 5e-05, train loss: 0.092895, train_acc: 0.972073 [45.54s]
+2023-10-16 14:59:30,853 P24864 INFO Train epoch 4/80, learning rate: 5e-05, train loss: 0.052044, train_acc: 0.986260 [45.18s]
+2023-10-16 14:59:32,877 P24864 INFO Best validation accuracy has been updated: 0.975806 -> 0.982527
+2023-10-16 14:59:32,958 P24864 INFO Save model to ./save\ResNet18_best.ckpt
+2023-10-16 15:00:18,241 P24864 INFO Train epoch 5/80, learning rate: 5e-05, train loss: 0.044537, train_acc: 0.985962 [45.28s]
+2023-10-16 15:01:05,806 P24864 INFO Train epoch 6/80, learning rate: 5e-05, train loss: 0.035768, train_acc: 0.989994 [45.53s]
+2023-10-16 15:01:07,816 P24864 INFO Best validation accuracy has been updated: 0.982527 -> 0.994624
+2023-10-16 15:01:07,895 P24864 INFO Save model to ./save\ResNet18_best.ckpt
+2023-10-16 15:01:53,288 P24864 INFO Train epoch 7/80, learning rate: 5e-05, train loss: 0.023562, train_acc: 0.993280 [45.39s]
+2023-10-16 15:02:40,759 P24864 INFO Train epoch 8/80, learning rate: 5e-05, train loss: 0.019362, train_acc: 0.994773 [45.48s]
+2023-10-16 15:03:28,275 P24864 INFO Train epoch 9/80, learning rate: 5e-05, train loss: 0.024620, train_acc: 0.992085 [45.53s]
+2023-10-16 15:04:16,093 P24864 INFO Train epoch 10/80, learning rate: 5e-05, train loss: 0.016396, train_acc: 0.994773 [45.81s]
+2023-10-16 15:05:03,521 P24864 INFO Train epoch 11/80, learning rate: 5e-05, train loss: 0.013232, train_acc: 0.996864 [45.39s]
+2023-10-16 15:05:50,864 P24864 INFO Train epoch 12/80, learning rate: 5e-05, train loss: 0.014797, train_acc: 0.994624 [45.26s]
+2023-10-16 15:06:38,226 P24864 INFO Train epoch 13/80, learning rate: 5e-05, train loss: 0.014300, train_acc: 0.995370 [45.46s]
+2023-10-16 15:07:26,321 P24864 INFO Train epoch 14/80, learning rate: 5e-05, train loss: 0.018426, train_acc: 0.994325 [46.10s]
+2023-10-16 15:08:14,452 P24864 INFO Train epoch 15/80, learning rate: 5e-05, train loss: 0.008280, train_acc: 0.997909 [46.13s]
+2023-10-16 15:09:02,250 P24864 INFO Train epoch 16/80, learning rate: 5e-05, train loss: 0.004669, train_acc: 0.998656 [45.75s]

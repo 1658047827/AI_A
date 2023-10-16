@@ -1,0 +1,13 @@
+{
+    "batch_size": 64,
+    "data_path": "./data/data.npz",
+    "epoches": 80,
+    "hash_id": "bb0e4dce",
+    "learning_rate": 5e-05,
+    "mode": "train",
+    "model": "ResNet18",
+    "random_seed": 42,
+    "raw_data_path": "./data/raw",
+    "record_path": "./record",
+    "save_path": "./save\\ResNet18_best.ckpt"
+}
