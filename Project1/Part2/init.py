@@ -188,15 +188,14 @@ def test_preprocess(raw_data_path, data_path, shuffle=True):
         for bmp in os.listdir(item_path):
             bmp_path = os.path.join(item_path, bmp)
             img = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
-            flatten_img = img.flatten()
-            x_list.append(flatten_img)
+            x_list.append(img)
             y_list.append(index)
 
-    x = np.vstack(x_list)
+    x = np.stack(x_list, 0)
     print("x generated, shape: {}".format(x.shape))
     y = np.array(y_list)
     print("y generated, shape: {}".format(y.shape))
-    num_samples = x.shape[0]
+    num_samples = len(x_list)
 
     if shuffle:
         print("Shuffling x and y")
@@ -218,13 +217,14 @@ if __name__ == "__main__":
     seed_everything(42)
 
     # data_preprocess("./data/raw", "./data/data.npz", augment=False)
-    data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
+    # data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
+    test_preprocess("./data/test_data", "./data/test.npz")
 
-    item_path = os.path.join("./data/raw", "1")
-    bmp_path = os.path.join(item_path, "1.bmp")
-    img: np.ndarray = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
-    print(img.shape)
-    print(img.dtype)
+    # item_path = os.path.join("./data/raw", "1")
+    # bmp_path = os.path.join(item_path, "1.bmp")
+    # img: np.ndarray = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
+    # print(img.shape)
+    # print(img.dtype)
     # cv2.imshow("img", img)
     # cv2.waitKey(0)  # wait for any key
     # cv2.imshow("rotated_img", random_rotate(img, 90))
@@ -242,14 +242,14 @@ if __name__ == "__main__":
     # print(data_npz["mean"])
     # print(data_npz["std"])
 
-    data_aug0_npz = np.load("./data/data_aug0.npz")
-    print(data_aug0_npz["x_train"].dtype)
-    print(data_aug0_npz["x_valid"].dtype)
-    print(data_aug0_npz["x_train"].shape)
-    print(data_aug0_npz["y_train"].shape)
-    print(data_aug0_npz["x_valid"].shape)
-    print(data_aug0_npz["y_valid"].shape)
-    print(data_aug0_npz["mean"])
-    print(data_aug0_npz["std"])
+    # data_aug0_npz = np.load("./data/data_aug0.npz")
+    # print(data_aug0_npz["x_train"].dtype)
+    # print(data_aug0_npz["x_valid"].dtype)
+    # print(data_aug0_npz["x_train"].shape)
+    # print(data_aug0_npz["y_train"].shape)
+    # print(data_aug0_npz["x_valid"].shape)
+    # print(data_aug0_npz["y_valid"].shape)
+    # print(data_aug0_npz["mean"])
+    # print(data_aug0_npz["std"])
 
     exit(0)

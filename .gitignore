@@ -8,6 +8,8 @@ __pycache__/
 
 # Project1 Part1
 Project1/Part1/data/char/train_raw/
+Project1/Part1/data/char/test_data/
 
 # Project1 Part2
 Project1/Part2/data/raw
+Project1/Part2/data/test_data/
