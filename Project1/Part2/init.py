@@ -220,36 +220,4 @@ if __name__ == "__main__":
     # data_preprocess("./data/raw", "./data/data_aug0.npz", augment=True)
     test_preprocess("./data/test_data", "./data/test.npz")
 
-    # item_path = os.path.join("./data/raw", "1")
-    # bmp_path = os.path.join(item_path, "1.bmp")
-    # img: np.ndarray = cv2.imread(bmp_path, cv2.IMREAD_GRAYSCALE)
-    # print(img.shape)
-    # print(img.dtype)
-    # cv2.imshow("img", img)
-    # cv2.waitKey(0)  # wait for any key
-    # cv2.imshow("rotated_img", random_rotate(img, 90))
-    # cv2.waitKey(0)  # wait for any key
-    # cv2.imshow("noisy_img", add_noise(img))
-    # cv2.waitKey(0)  # wait for any key
-
-    # data_npz = np.load("./data/data.npz")
-    # print(data_npz["x_train"].dtype)
-    # print(data_npz["x_valid"].dtype)
-    # print(data_npz["x_train"].shape)
-    # print(data_npz["y_train"].shape)
-    # print(data_npz["x_valid"].shape)
-    # print(data_npz["y_valid"].shape)
-    # print(data_npz["mean"])
-    # print(data_npz["std"])
-
-    # data_aug0_npz = np.load("./data/data_aug0.npz")
-    # print(data_aug0_npz["x_train"].dtype)
-    # print(data_aug0_npz["x_valid"].dtype)
-    # print(data_aug0_npz["x_train"].shape)
-    # print(data_aug0_npz["y_train"].shape)
-    # print(data_aug0_npz["x_valid"].shape)
-    # print(data_aug0_npz["y_valid"].shape)
-    # print(data_aug0_npz["mean"])
-    # print(data_aug0_npz["std"])
-
     exit(0)

@@ -196,10 +196,5 @@ if __name__ == "__main__":
 
     test_preprocess("./data/char/test_data", "./data/char/test.npz")
     # data_preprocess("./data/char/train_raw", "./data/char/data.npz")
-    # data_npz = np.load("./data/char/data.npz")
-    # print(data_npz["x_train"].shape)
-    # print(data_npz["y_train"].shape)
-
-    # test_preprocess("", "./data/char/test.npz")
 
     exit(0)
