@@ -78,9 +78,10 @@ def load_from_npz(file_path):
     return sentences, labels
 
 
-def data_process(folder_path):
+def data_process(folder_path, mode="train"):
     train_file = os.path.join(folder_path, "train.npz")
     valid_file = os.path.join(folder_path, "valid.npz")
+    test_file = os.path.join(folder_path, "test.npz")
 
     if not os.path.isfile(train_file):
         train_path = os.path.join(folder_path, "train.txt")
@@ -92,15 +93,28 @@ def data_process(folder_path):
         valid_sentences, valid_labels = read_data(valid_path)
         save_as_npz(valid_sentences, valid_labels, valid_file)
 
+    if mode == "test" and not os.path.isfile(test_file):
+        test_path = os.path.join(folder_path, "test.txt")
+        test_sentences, test_labels = read_data(test_path)
+        save_as_npz(test_sentences, test_labels, test_file)
+
     train_sentences, train_labels = load_from_npz(train_file)
     valid_sentences, valid_labels = load_from_npz(valid_file)
+    if mode == "test":
+        test_sentences, test_labels = load_from_npz(test_file)
 
     logging.info(f"train dataset size: {len(train_sentences)}")
     logging.info(f"valid dataset size: {len(valid_sentences)}")
+    if mode == "test":
+        logging.info(f"test dataset size: {len(test_sentences)}")
 
     train_data = list(zip(train_sentences, train_labels))
     valid_data = list(zip(valid_sentences, valid_labels))
-    return train_data, valid_data
+    if mode == "test":
+        test_data = list(zip(test_sentences, test_labels))
+    else:
+        test_data = None
+    return train_data, valid_data, test_data
 
 
 def set_log(file_path):
