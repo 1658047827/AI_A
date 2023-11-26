@@ -1,5 +1,8 @@
+import re
+
+
 # 特征函数
-def word2features_0(sent, i):
+def word2features_0(sent, language, i):
     word = sent[i]
     prev_word = "<start>" if i == 0 else sent[i - 1]  # START_TAG
     next_word = "<end>" if i == (len(sent) - 1) else sent[i + 1]  # STOP_TAG
@@ -20,7 +23,14 @@ def word2features_0(sent, i):
     return features
 
 
-def word2features_1(sent, i):
+def word2features_1(sent, language, i):
+    if language == "English":
+        return en2features(sent, i)
+    elif language == "Chinese":
+        return word2features_0(sent, "", i)
+
+
+def en2features(sent, i):
     word = sent[i]
     features = {
         "bias": 1.0,
@@ -61,12 +71,26 @@ def word2features_1(sent, i):
     return features
 
 
+def char_shape(char):
+    if char.isnumeric():
+        return "numeric"
+    elif char.isalpha():
+        if char.islower():
+            return "lowercase"
+        elif char.isupper():
+            return "uppercase"
+        else:
+            return "mixedcase"
+    else:
+        return "other"
+
+
 # 特征提取
-def sent2features(sent, feature_func_num=0):
+def sent2features(sent, language, feature_func_num=0):
     if feature_func_num == 0:
         feature_func = word2features_0
     elif feature_func_num == 1:
         feature_func = word2features_1
     elif feature_func_num == 2:
         raise NotImplementedError
-    return [feature_func(sent, i) for i in range(len(sent))]
+    return [feature_func(sent, language, i) for i in range(len(sent))]
