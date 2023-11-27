@@ -1,6 +1,3 @@
-import re
-
-
 # 特征函数
 def word2features_0(sent, language, i):
     word = sent[i]
@@ -39,7 +36,7 @@ def en2features(sent, i):
         "word.isupper()": word.isupper(),
         "word.istitle()": word.istitle(),
         "word.isdigit()": word.isdigit(),
-        "pos": sent[i],
+        "word": sent[i],
         "word.length()": len(word),
         "word.isalnum()": word.isalnum(),
         "word.has_hyphen()": "-" in word,
@@ -48,41 +45,19 @@ def en2features(sent, i):
     }
     if i > 0:
         prev_word = sent[i - 1]
-        features.update(
-            {
-                "prev_word.lower()": prev_word.lower(),
-                "prev_word.isupper()": prev_word.isupper(),
-            }
-        )
+        features["prev_word.lower()"] = prev_word.lower()
+        features["prev_word.isupper()"] = prev_word.isupper()
     else:
         features["BOS"] = True
 
     if i < len(sent) - 1:
         next_word = sent[i + 1]
-        features.update(
-            {
-                "next_word.lower()": next_word.lower(),
-                "next_word.isupper()": next_word.isupper(),
-            }
-        )
+        features["next_word.lower()"] = next_word.lower()
+        features["next_word.isupper()"] = next_word.isupper()
     else:
         features["EOS"] = True
 
     return features
-
-
-def char_shape(char):
-    if char.isnumeric():
-        return "numeric"
-    elif char.isalpha():
-        if char.islower():
-            return "lowercase"
-        elif char.isupper():
-            return "uppercase"
-        else:
-            return "mixedcase"
-    else:
-        return "other"
 
 
 # 特征提取
