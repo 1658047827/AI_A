@@ -6,7 +6,7 @@ import logging
 
 
 def build_vocab(file_paths):
-    vocab = {}
+    vocab = {"UNK": 0}
     for file_path in file_paths:
         with open(file_path, "r", encoding="utf-8") as file:
             lines = file.readlines()

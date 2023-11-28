@@ -3,14 +3,14 @@ from tqdm import tqdm
 
 
 class HMM_model:
-    def __init__(self, tag2idx, vocab=None):
-        self.tag2idx = tag2idx
-        self.n_tag = len(self.tag2idx)  # 标签（隐状态）个数
+    def __init__(self, tag2id, vocab=None):
+        self.tag2id = tag2id
+        self.n_tag = len(self.tag2id)  # 标签（隐状态）个数
         self.vocab = vocab
         self.epsilon = 1e-100
-        self.idx2tag = {idx: tag for (tag, idx) in self.tag2idx.items()}
+        self.idx2tag = {idx: tag for (tag, idx) in self.tag2id.items()}
         self.A = np.zeros((self.n_tag, self.n_tag))
-        self.B = np.zeros((self.n_tag, len(vocab)))
+        self.B = np.zeros((self.n_tag, len(vocab)))  # 第一列对应"UNK"
         self.Pi = np.zeros(self.n_tag)
 
     def train(self, train_data):
@@ -18,12 +18,12 @@ class HMM_model:
             for j in range(len(sentence)):
                 cur_word = sentence[j]
                 cur_tag = labels[j]
-                self.B[self.tag2idx[cur_tag]][self.vocab[cur_word]] += 1
+                self.B[self.tag2id[cur_tag]][self.vocab[cur_word]] += 1
                 if j == 0:  # 统计初始概率
-                    self.Pi[self.tag2idx[cur_tag]] += 1
+                    self.Pi[self.tag2id[cur_tag]] += 1
                     continue
                 pre_tag = labels[j - 1]
-                self.A[self.tag2idx[pre_tag]][self.tag2idx[cur_tag]] += 1
+                self.A[self.tag2id[pre_tag]][self.tag2id[cur_tag]] += 1
 
         # 对数据进行对数归一化，并最后取log防止连乘浮点数下溢
         self.Pi = self.Pi / self.Pi.sum()
@@ -44,6 +44,9 @@ class HMM_model:
         self.B[self.B == 0] = self.epsilon
         self.B = np.log10(self.B)
 
+        # 为"UNK"未知字符设置矩阵值（超参）
+        self.B[:, 0] = np.ones(self.n_tag) * np.log(1.0 / self.n_tag)
+
     def valid(self, valid_data):
         return [self.viterbi(sentence) for sentence, _ in valid_data]
 
@@ -53,12 +56,12 @@ class HMM_model:
         delta = np.zeros((N, T))
         psi = np.zeros((N, T), dtype=int)
 
-        delta[:, 0] = self.Pi + self.B[:, self.vocab[O[0]]]
+        delta[:, 0] = self.Pi + self.B[:, self.vocab.get(O[0], 0)]
         for t in range(1, T):
-            O_t = self.vocab[O[t]]
+            O_t = self.vocab.get(O[t], 0)
             for j in range(N):
                 # delta[j, t] = max(delta[i, t-1] * A[i, j] * B[j, O[t]]) 1<=i<=N
-                # 但是参数已经取过log了，所以这里得用加法
+                # 参数已经取过log了，所以这里得用加法
                 delta[j, t] = np.max(delta[:, t - 1] + self.A[:, j]) + self.B[j, O_t]
                 psi[j, t] = np.argmax(delta[:, t - 1] + self.A[:, j])
 
