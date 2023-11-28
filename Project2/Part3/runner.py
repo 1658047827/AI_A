@@ -9,7 +9,7 @@ class Runner:
         self.model = model
         self.optimizer = optimizer
         self.tag_num = tag_num
-        self.best_score = 0
+        self.best_score = 0.0
         # self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = "cpu"
         self.model.to(self.device)
@@ -26,7 +26,6 @@ class Runner:
         threshold,
     ):
         self.model.train()
-        best_score = 0
         global_step = 0
         num_training_steps = epochs * len(train_dataloader)
         for epoch in range(1, epochs + 1):
@@ -54,12 +53,12 @@ class Runner:
                     if score > threshold:
                         eval_steps = eval_steps2
                     self.model.train()
-                    if score > best_score:
-                        print(f"best score increase:{best_score} -> {score}")
-                        best_score = score
+                    if score > self.best_score:
+                        print(f"best score increase:{self.best_score} -> {score}")
+                        self.best_score = score
                         self.save_model(save_path)
 
-            print(f"training done best score: {best_score}")
+            print(f"training done best score: {self.best_score}")
 
     @torch.no_grad()
     def evaluate(self, valid_loader):
@@ -78,7 +77,7 @@ class Runner:
         score = metrics.f1_score(
             y_true=real_tags,
             y_pred=my_tags,
-            labels=range(2, self.tag_num),
+            labels=range(1, self.tag_num - 2),  # 排除 "O", "<START>", "<STOP>"
             average="micro",
         )
         return score
