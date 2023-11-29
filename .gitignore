@@ -16,8 +16,12 @@ Project1/Part2/data/raw
 Project1/Part2/data/test_data/
 Project1/Part2/record/
 
-# Project2
+# Project2 Part1
 Project2/Part1/output_*.txt
+
+# Project2 Part2
 Project2/Part2/output_*.txt
+
+# Project2 Part3
 Project2/Part3/output_*.txt
 Project2/Part3/*.pth
