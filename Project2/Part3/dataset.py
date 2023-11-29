@@ -22,7 +22,7 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.examples)
 
-    def collect_fn(self, batch):
+    def collate_fn(self, batch):
         text = [t for t, _ in batch]
         label = [l for _, l in batch]
         seq_len = [len(i) for i in text]
