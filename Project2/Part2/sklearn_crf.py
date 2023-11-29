@@ -33,20 +33,26 @@ def en2features(sent, i):
         "bias": 1.0,
         "word.lower()": word.lower(),
         "word[-3:]": word[-3:],
+        "word[-2:]": word[-2:],
+        "word[:3]": word[:3],
+        "word[:2]": word[:2],
         "word.isupper()": word.isupper(),
         "word.istitle()": word.istitle(),
         "word.isdigit()": word.isdigit(),
-        "word": sent[i],
+        "word": word,
         "word.length()": len(word),
         "word.isalnum()": word.isalnum(),
         "word.has_hyphen()": "-" in word,
         "word.has_digit()": any(char.isdigit() for char in word),
-        # Add more features as needed
     }
     if i > 0:
         prev_word = sent[i - 1]
         features["prev_word.lower()"] = prev_word.lower()
         features["prev_word.isupper()"] = prev_word.isupper()
+        features["prev_word[-3:]"] = prev_word[-3:]
+        features["prev_word[-2:]"] = prev_word[-2:]
+        features["prev_word[:3]"] = prev_word[:3]
+        features["prev_word[:2]"] = prev_word[:2]
     else:
         features["BOS"] = True
 
@@ -54,6 +60,10 @@ def en2features(sent, i):
         next_word = sent[i + 1]
         features["next_word.lower()"] = next_word.lower()
         features["next_word.isupper()"] = next_word.isupper()
+        features["next_word[-3:]"] = next_word[-3:]
+        features["next_word[-2:]"] = next_word[-2:]
+        features["next_word[:3]"] = next_word[:3]
+        features["next_word[:2]"] = next_word[:2]
     else:
         features["EOS"] = True
 
