@@ -59,7 +59,7 @@ def check(language, gold_path, my_path):
         sort_labels = sorted_labels_chn
     y_true = []
     y_pred = []
-    with open(gold_path, "r") as g_f, open(my_path, "r") as m_f:
+    with open(gold_path, "r", encoding="utf-8") as g_f, open(my_path, "r", encoding="utf-8") as m_f:
         g_lines = g_f.readlines()
         m_lines = m_f.readlines()
         # assert len(g_lines) == len(m_lines), "Length is Not Equal."
